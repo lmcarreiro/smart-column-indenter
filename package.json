@@ -1,0 +1,31 @@
+{
+    "version": "0.0.1",
+    "name": "smart-column-indenter",
+    "description": "A smart source code indenter that indent the code into columns",
+    "keywords": [
+        "indent",
+        "indenter",
+        "indentation",
+        "table",
+        "column"
+    ],
+    "homepage": "https://github.com/lmcarreiro/smart-column-indenter",
+    "author": "Leonardo Machado Carreiro <leonardo.mcarreiro@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lmcarreiro/smart-column-indenter"
+    },
+    "bugs": {
+        "url": "https://github.com/lmcarreiro/smart-column-indenter/issues"
+    },
+    "devDependencies": {
+        "@types/node": "^8.0.33",
+        "@types/request": "^2.0.4",
+        "request": "^2.83.0",
+        "typescript": "^2.5.3"
+    },
+    "scripts": {
+        "start": "npm run build:indenter && node src/indenter/index.js",
+        "build:indenter": "tsc -p src/indenter/tsconfig.json"
+    }
+}

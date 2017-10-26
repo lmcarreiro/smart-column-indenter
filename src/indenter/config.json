@@ -1,0 +1,6 @@
+{
+    "parserConfig": {
+        "JsonParser": ["json"],
+        "TypeScriptParser": ["js", "ts"]
+    }
+}
