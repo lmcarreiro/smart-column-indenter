@@ -19,13 +19,17 @@
         "url": "https://github.com/lmcarreiro/smart-column-indenter/issues"
     },
     "devDependencies": {
-        "@types/node": "^8.0.33",
-        "@types/request": "^2.0.4",
-        "request": "^2.83.0",
-        "typescript": "^2.5.3"
+        "@types/node": "latest",
+        "@types/request": "latest",
+        "@types/mocha": "latest",
+        "request": "latest",
+        "mocha": "latest",
+        "typescript": "latest"
     },
     "scripts": {
-        "start": "npm run build:indenter && node src/indenter/index.js",
-        "build:indenter": "tsc -p src/indenter/tsconfig.json"
+        "start": "npm run build && node src/indenter/index.js",
+        "test": "npm run build:test && mocha",
+        "build": "tsc -p tsconfig.json",
+        "build:test": "tsc -p tsconfig-test.json"
     }
 }

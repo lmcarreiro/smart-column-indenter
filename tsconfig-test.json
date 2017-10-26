@@ -12,7 +12,7 @@
         "sourceMap": true
     },
     "include": [
-        "./",
+        "./test",
         "node_modules/@types"
     ],
     "exclude": [
