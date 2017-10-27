@@ -1,13 +1,27 @@
 import * as assert from 'assert';
+import Indenter from '../src/indenter/Indenter';
 
-describe('Array', () => {
+describe('Indenter', () => {
 
-  describe('#indexOf()', () => {
+    describe('indent()', () => {
 
-    it('should return -1 when the value is not present', () => {
-      assert.equal(-1, [1,2,3].indexOf(4));
+        it('test 1', () => {
+
+            let code = `
+                import * as assert from 'assert';
+                import Indenter from '../src/indenter/Indenter';
+            `;
+
+            let expected = `
+                import * as assert from 'assert'                  ;
+                import Indenter    from '../src/indenter/Indenter';
+            `;
+
+            let indenter = new Indenter(<any>{});
+            let result = indenter.indent(code);
+            assert.equal(result, expected);
+        });
+
     });
-
-  });
 
 });
