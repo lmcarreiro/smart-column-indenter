@@ -1,5 +1,6 @@
 import * as fs from 'fs';
-import Config from './Config';
+import Config  from './Config';
+import Scanner from './Scanner';
 
 export default class Indenter
 {
@@ -18,7 +19,11 @@ export default class Indenter
 
     public indent(code: string): string
     {
-        //TODO: implement the indenter
+        let scanner = new Scanner(code);
+        var tokens = scanner.scan();
+        
+        console.log(tokens);
+        
         return code;
     }
 }
