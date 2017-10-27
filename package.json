@@ -28,7 +28,7 @@
     },
     "scripts": {
         "start": "npm run build && node src/indenter/index.js",
-        "test": "npm run build:test && mocha",
+        "test": "npm run build && npm run build:test && mocha",
         "build": "tsc -p tsconfig.json",
         "build:test": "tsc -p tsconfig-test.json"
     }
