@@ -18,14 +18,41 @@ describe('LCS', () => {
 
     describe('execute()', () => {
 
-        it('test 1', () => {
+        it('borders vs middles', () => {
             const sequences = [
-                "xaaabbbx",
-                "aaaxxbbb",
-                "xcccdddx",
-                "cccxxddd"
+                "XaaabbbX",
+                "aaaXXbbb",
+                "XcccdddX",
+                "cccXXddd"
             ];
-            const expected = "xx";
+            const expected = "XX";
+
+            test(sequences, expected);
+        });
+
+        it('diagonal 1-length inside 4-length', () => {
+            const sequences = [
+                "Xabcd",
+                "aXbcd",
+                "abXcd",
+                "abcXd",
+                "abcdX"
+            ];
+            const expected = "abcd";
+
+            test(sequences, expected);
+        });
+
+        it('diagonal 4-length inside 5-length', () => {
+            const sequences = [
+                "wxyzABCDE",
+                "AwxyzBCDE",
+                "ABwxyzCDE",
+                "ABCwxyzDE",
+                "ABCDwxyzE",
+                "ABCDEwxyz"
+            ];
+            const expected = "ABCDE";
 
             test(sequences, expected);
         });
