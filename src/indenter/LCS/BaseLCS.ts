@@ -21,6 +21,8 @@ export default abstract class BaseLCS
 
     private executeLCS(sequences: Sequence[]): Sequence
     {
+        if (sequences.some(s => s.length === 0)) return [];
+        
         switch (sequences.length) {
             case 0: return [];
             case 1: return sequences[0];

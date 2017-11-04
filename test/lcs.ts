@@ -11,7 +11,7 @@ function testWithSequences(sequences: Sequence[], expectedLCS: Sequence): void
 {
     let lcs = new RecursiveInGroupsLCS();
     let result = lcs.execute(sequences);
-    assert.equal(result, expectedLCS);
+    assert.deepEqual(result, expectedLCS);
 }
 
 describe('LCS', () => {
