@@ -30,7 +30,7 @@ describe('LCS', () => {
             test(sequences, expected);
         });
 
-        it('diagonal 1-length inside 4-length', () => {
+        it('constant diagonal 1-length inside 4-length LCS', () => {
             const sequences = [
                 "Xabcd",
                 "aXbcd",
@@ -43,7 +43,7 @@ describe('LCS', () => {
             test(sequences, expected);
         });
 
-        it('diagonal 4-length inside 5-length', () => {
+        it('constant diagonal 4-length inside 5-length LCS', () => {
             const sequences = [
                 "wxyzABCDE",
                 "AwxyzBCDE",
@@ -53,6 +53,34 @@ describe('LCS', () => {
                 "ABCDEwxyz"
             ];
             const expected = "ABCDE";
+
+            test(sequences, expected);
+        });
+        
+        it('variant diagonal 5-length inside 5-length LCS', () => {
+            const sequences = [
+                "abcdeVWXYZ",
+                "VabcdfWXYZ",
+                "VWabcefXYZ",
+                "VWXabdefYZ",
+                "VWXYacdefZ",
+                "VWXYZbcdef"
+            ];
+            const expected = "VWXYZ";
+
+            test(sequences, expected);
+        });
+
+        it('variant diagonal 5-length inside 5-length (with mixed chars in the middle) LCS', () => {
+            const sequences = [
+                "abcdegVhWiXjYkZl",
+                "lVabcdfgWhXiYjZk",
+                "kVlWabcefgXhYiZj",
+                "jVkWlXabdefgYhZi",
+                "iVjWkXlYacdefgZh",
+                "hViWjXkYlZbcdefg"
+            ];
+            const expected = "VWXYZ";
 
             test(sequences, expected);
         });
