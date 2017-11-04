@@ -26,7 +26,7 @@ function testIndenter(): void
     console.log(code);
 
     let indenter = new Indenter("./src/indenter/config.json");
-    let indentedCode = indenter.indent(code);
+    let indentedCode = indenter.indent(code, "ts");
 
     console.log("Indented code:");
     console.log(indentedCode);

@@ -1,9 +1,9 @@
 import * as assert from 'assert';
 import Indenter from '../src/indenter/Indenter';
 
-function test(code: string, expected: string): void {
+function test(extension: string, code: string, expected: string): void {
     let indenter = new Indenter(<any>{});
-    let result = indenter.indent(code);
+    let result = indenter.indent(code, extension);
     assert.equal(result, expected);
 }
 
@@ -22,7 +22,7 @@ describe('Indenter', () => {
                 import Indenter    from '../src/indenter/Indenter';
             `;
 
-            test(code, expected);
+            test("ts", code, expected);
         });
 
 
@@ -64,7 +64,7 @@ describe('Indenter', () => {
                 { label: 'Unidade de Medida (hint)'       , name: 'UnidadeMedidaDescricao', width: 100, align: 'left' , hidden: true      , editable: false   , edittype: 'text'                                                                                                                  },
             `;
 
-            test(code, expected);
+            test("js", code, expected);
         });
 
     });

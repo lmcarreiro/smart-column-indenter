@@ -1,6 +1,6 @@
 {
-    "parserConfig": {
-        "JsonParser": ["json"],
-        "TypeScriptParser": ["js", "ts"]
+    "scannerExtensionsMap": {
+        "XmlScanner": ["xml", "html"],
+        "TypeScriptScanner": ["ts", "js", "json"]
     }
 }

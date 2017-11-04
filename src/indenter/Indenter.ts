@@ -1,6 +1,6 @@
 import * as fs from 'fs';
+import * as sc from './scanner';
 import Config  from './Config';
-import Scanner from './Scanner';
 import Token   from './Token';
 
 export default class Indenter
@@ -18,10 +18,10 @@ export default class Indenter
         }
     }
 
-    public indent(code: string): string
+    public indent(code: string, extension: string): string
     {
-        let scanner = new Scanner(code);
-        let tokens = scanner.scan();
+        let scanner = sc.ScannerFactory.getScanner(this.config, extension);
+        let tokens = scanner.scan(code);
         let lines = this.trimTokens(this.splitTokens(tokens)).filter(l => l.length > 0);
 
         console.log(lines);

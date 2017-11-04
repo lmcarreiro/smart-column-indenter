@@ -1,3 +1,5 @@
-export default interface GeneratorConfig {
-    parserConfig: { [name: string]: string[] }
+export default interface IndenterConfig {
+    scannerExtensionsMap: { [scannerName: string]: Extensions }
 }
+
+type Extensions = string[];

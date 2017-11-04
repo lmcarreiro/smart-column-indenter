@@ -1,19 +1,18 @@
-import Token, { TokenType } from './Token';
+import Scanner from "./base/Scanner";
+import Token, { TokenType } from "../Token";
 
-export default class Scanner {
+export default class TypeScriptScanner extends Scanner {
 
+    private code: string;
     private position: number;
     private tokens: Token[];
-
-    constructor(private code: string) {
-
-    }
 
     private endOfCode(): boolean {
         return this.position >= this.code.length;
     }
 
-    public scan(): Token[] {
+    public scan(code: string): Token[] {
+        this.code = code;
         this.position = 0;
         this.tokens = [];
         
