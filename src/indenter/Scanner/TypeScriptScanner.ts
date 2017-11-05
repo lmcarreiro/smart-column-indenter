@@ -30,7 +30,7 @@ export default class TypeScriptScanner extends Scanner {
             while(this.code[this.position] === " ") {
                 this.position++;
             }
-            return new Token("space");
+            return new Token("space", " ");
         }
         else if (nextChar.match(/\r|\n|\r\n/)) {
             this.position++;

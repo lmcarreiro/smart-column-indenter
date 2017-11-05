@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as sc from './scanner';
+import LCS     from './LCS';
 import Config  from './Config';
 import Token   from './Token';
 
@@ -20,15 +21,13 @@ export default class Indenter
 
     public indent(code: string, extension: string): string
     {
-        let scanner = sc.ScannerFactory.getScanner(this.config, extension);
-        let tokens = scanner.scan(code);
-        let lines = this.trimTokens(this.splitTokens(tokens)).filter(l => l.length > 0);
+        const scanner = sc.ScannerFactory.getScanner(this.config, extension);
+        const tokens = scanner.scan(code);
+        const lines = this.trimTokens(this.splitTokens(tokens)).filter(l => l.length > 0);
+        const sequences = lines.map(line => line.map(token => token.kind));
 
-        console.log(lines);
-
-        this.simpleHorizontalDiff(lines);
-
-        return code;
+        const lcs = new LCS().execute(sequences);
+        return this.columnizeTokens(lcs, lines);
     }
 
     private splitTokens(tokens: Token[]): Token[][] {
@@ -55,63 +54,61 @@ export default class Indenter
         return lines;
     }
 
-    private simpleHorizontalDiff(lines: Token[][]) {
-        let linesIndented: (Token|undefined)[][] = lines.map(l => []);
+    private columnizeTokens(lcs: string[], lines: Token[][]): string
+    {
+        const columnizedLines = lines.map(line => [] as (Token|undefined)[]);
+        const actualColumnByLine = lines.map(line => 0);
 
-        let actualColumnByLine = lines.map(l => 0);
+        for (const tokenKind of lcs) {
+            let tokenWithOtherKind: boolean;
 
-        for (let j = 0; true; j++) {
-            let values = this.valuesByKind(lines, actualColumnByLine);
-            let keyMax = this.getKeyWithMaxValue(values);
-
-            if (!keyMax) break;
-
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
-                var col = actualColumnByLine[i];
-
-                if (line) {
-                    if (line[col] && line[col].kind === keyMax) {
-                        linesIndented[i].push(line[col]);
+            do {
+                tokenWithOtherKind = false;
+                lines.forEach((line, i) => {
+                    if (line[actualColumnByLine[i]].kind !== tokenKind) {
+                        tokenWithOtherKind = true;
+                        columnizedLines[i].push(line[actualColumnByLine[i]]);
                         actualColumnByLine[i]++;
                     }
                     else {
-                        linesIndented[i].push(undefined);
+                        columnizedLines[i].push(undefined);
                     }
-                }
-            }
+                });
+            } while(tokenWithOtherKind);
+
+            lines.forEach((line, i) => {
+                columnizedLines[i].push(line[actualColumnByLine[i]]);
+                actualColumnByLine[i]++;
+            });
         }
 
-        console.log("linesIndented");
-        console.log(linesIndented);
+        return this.stringify(columnizedLines);
     }
 
-    private valuesByKind(lines: Token[][], actualColumnByLine: number[]): { [value: string]: number } {
-        let values: { [value: string]: number } = {};
-        
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i];
-            var col = actualColumnByLine[i];
-            if (line[col]) {
-                values[line[col].kind] = values[line[col].kind] || 0;
-                values[line[col].kind]++;
+    private stringify(lines: (Token|undefined)[][]): string
+    {
+        const stringifiedLines = lines.map(line => "");
+
+        for (let column = 0; column < lines[0].length; column++) {
+            const lengths = lines.map(l => {
+                const token = l[column];
+                return token && token.content ? token.content.length : 0;
+            });
+            const maxLength = Math.max(...lengths);
+
+            for (let i = 0; i < lines.length; i++) {
+                const token = lines[i][column];
+                const content = (token && token.content) || "";
+                stringifiedLines[i] += this.pad(content, maxLength);
             }
         }
 
-        return values;
+        //TODO: replace line-break type with the same used on input code
+        return stringifiedLines.join("\r\n");
     }
 
-    private getKeyWithMaxValue(values: { [value: string]: number }): string|undefined {
-        let keyMax: string|undefined;
-        let valueMax = 0;
-
-        for(let key in values) {
-            if (values[key] > valueMax) {
-                keyMax = key;
-                valueMax = values[key];
-            }
-        }
-
-        return keyMax;
+    private pad(str: string, length: number, char: string = " "): string
+    {
+        return str + new Array((length - str.length) + 1).join(char);
     }
 }
