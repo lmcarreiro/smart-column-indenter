@@ -1,4 +1,5 @@
 import Sequence from "./Sequence";
+import { lcs as lcsOf2 } from "./LCSof2usingDP";
 
 export default abstract class BaseLCS
 {
@@ -42,11 +43,7 @@ export default abstract class BaseLCS
 
     private executeForTwo(a: Sequence, b: Sequence): Sequence
     {
-        //TODO: replace this implementation for the Dynamic Programming version for two sequences
-        const seq1 = this.execute([a, b.slice(0, -1)]);
-        const seq2 = this.execute([b, a.slice(0, -1)]);
-
-        return seq1.length >= seq2.length ? seq1 : seq2;
+        return lcsOf2(a, b);
     }
 
     /**

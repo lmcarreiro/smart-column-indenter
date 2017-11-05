@@ -1,7 +1,8 @@
-// LCS of 2 strings using Dynamic Programming
+// LCS of 2 strings using Dynamic Programming (changed to work with arrays of strings)
 // From https://rosettacode.org/wiki/Longest_common_subsequence#JavaScript
-export function lcs(x,y){
-	var s,i,j,m,n,
+export function lcs(x: string[], y: string[]): string[]
+{
+	var s,i,j,m=x.length,n=x.length,
 		lcs=[],row=[],c=[],
 		left,diag,latch;
 	//make sure shorter string is the column string
@@ -33,5 +34,5 @@ export function lcs(x,y){
 			case (j&&c[i][j-1]): j--;
 		}
 	}
-	return lcs.join('');
+	return lcs;
 }
