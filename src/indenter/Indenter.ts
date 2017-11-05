@@ -24,7 +24,7 @@ export default class Indenter
         const scanner = sc.ScannerFactory.getScanner(this.config, extension);
         const tokens = scanner.scan(code);
         const lines = this.trimTokens(this.splitTokens(tokens)).filter(l => l.length > 0);
-        const sequences = lines.map(line => line.map(token => token.kind));
+        const sequences = lines.map(line => line.map(token => this.token2string(token)));
 
         const lcs = new LCS().execute(sequences);
         return this.columnizeTokens(lcs, lines);
@@ -65,7 +65,7 @@ export default class Indenter
             do {
                 tokenWithOtherKind = false;
                 lines.forEach((line, i) => {
-                    if (line[actualColumnByLine[i]].kind !== tokenKind) {
+                    if (this.token2string(line[actualColumnByLine[i]]) !== tokenKind) {
                         tokenWithOtherKind = true;
                         columnizedLines[i].push(line[actualColumnByLine[i]]);
                         actualColumnByLine[i]++;
@@ -110,5 +110,14 @@ export default class Indenter
     private pad(str: string, length: number, char: string = " "): string
     {
         return str + new Array((length - str.length) + 1).join(char);
+    }
+
+    private token2string(token: Token): string
+    {
+        switch (token.kind) {
+            case "symbol": return token.content || "";
+            case "reserved word": return token.content || "";
+            default: return token.kind;
+        }
     }
 }

@@ -42,7 +42,7 @@ export default class TypeScriptScanner extends Scanner {
                 content.push(nextChar);
                 nextChar = this.code[++this.position];
             } while(nextChar.match(/[a-zA-Z0-9_$.]/));
-            return new Token("word", content.join(""));
+            return this.createWordToken(content.join(""));
         }
         else if (nextChar.match(/[;*]/)) {
             this.position++;
@@ -62,4 +62,124 @@ export default class TypeScriptScanner extends Scanner {
             throw new Error("Invalid charater!");
         }
     }
+
+    private createWordToken(content: string): Token
+    {
+        if (TypeScriptScanner.reservedWords.indexOf(content) > -1) {
+            const type = TypeScriptScanner.reservedWordType[content] || "reserved word";
+            return new Token(type, content);
+        }
+        else {
+            return new Token("word", content);
+        }
+    }
+
+    private static reservedWordType: { [word: string]: TokenType } = {
+        "private": "access modifier",
+        "protected": "access modifier",
+        "public": "access modifier",
+
+        "var": "variable declaration",
+        "let": "variable declaration",
+        "const": "variable declaration",
+
+        "import": "import export",
+        "export": "import export",
+
+        "any": "object type",
+        "boolean": "object type",
+        "number": "object type",
+        "string": "object type",
+        "object": "object type",
+        "never": "object type",
+        "void": "object type",
+
+        "case": "switch option",
+        "default": "switch option",
+
+        "break": "loop control flow",
+        "continue": "loop control flow",
+
+        "false": "value",
+        "null": "value",
+        "true": "value",
+        "undefined": "value",
+
+        "in": "for iterator",
+        "of": "for iterator",
+    }
+
+    private static reservedWords = [
+        "abstract",
+        "any",
+        "as",
+        "boolean",
+        "break",
+        "case",
+        "catch",
+        "class",
+        "continue",
+        "const",
+        "constructor",
+        "debugger",
+        "declare",
+        "default",
+        "delete",
+        "do",
+        "else",
+        "enum",
+        "export",
+        "extends",
+        "false",
+        "finally",
+        "for",
+        "from",
+        "function",
+        "get",
+        "if",
+        "implements",
+        "import",
+        "in",
+        "instanceof",
+        "interface",
+        "is",
+        "keyof",
+        "let",
+        "module",
+        "namespace",
+        "never",
+        "new",
+        "null",
+        "number",
+        "object",
+        "package",
+        "private",
+        "protected",
+        "public",
+        "readonly",
+        "require",
+        "global",
+        "return",
+        "set",
+        "static",
+        "string",
+        "super",
+        "switch",
+        "symbol",
+        "this",
+        "throw",
+        "true",
+        "try",
+        "type",
+        "typeof",
+        "undefined",
+        "var",
+        "void",
+        "while",
+        "with",
+        "yield",
+        "async",
+        "await",
+        "of",
+    ];
 }
