@@ -103,6 +103,7 @@ export default class Indenter
             }
         }
 
+        //TODO: put original indentation back in the string
         //TODO: replace line-break type with the same used on input code
         return stringifiedLines.join("\r\n");
     }
