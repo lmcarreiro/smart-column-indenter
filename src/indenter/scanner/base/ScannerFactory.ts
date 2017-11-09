@@ -23,6 +23,6 @@ export default class ScannerFactory {
             }
         }
 
-        throw new Error(`Extension '${extension}' is not mapper to any Scanner.`);
+        throw new Error(`Extension '${extension}' is not mapped to any Scanner.`);
     }
 }
