@@ -19,12 +19,20 @@ export default class Indenter
 
     public indent(code: string, extension: string): string
     {
+        const numLines = (code.trim().match(/\r\n|\r|\n/g) || []).length;
+        if (numLines < 2) {
+            throw new Error("The code to indent must have at least 2 lines of code.");
+        }
+
+        const lineBreak = (code.match(/\r\n|\r|\n/) || ["\n"])[0];
+        const indentation = code.trim().split(/\r\n|\r|\n/g)[1].replace(/(\s+).*/, "$1");
+
         const scanner = sc.ScannerFactory.getScanner(this.config, extension);
         const tokens = scanner.scan(code);
         const lines = this.trimTokens(this.splitTokens(tokens)).filter(l => l.length > 0);
         const lcs = this.executeLCS(lines);
 
-        const indentedCode = this.columnizeTokens(lcs, lines);
+        const indentedCode = this.columnizeTokens(lcs, lines, indentation, lineBreak);
 
         this.ensureSameCode(code, indentedCode);
 
@@ -103,7 +111,7 @@ export default class Indenter
         return !!(+left ^ +right);
     }
 
-    private columnizeTokens(lcs: string[], lines: Token[][]): string
+    private columnizeTokens(lcs: string[], lines: Token[][], indentation: string, lineBreak: string): string
     {
         const columnizedLines = lines.map(line => [] as (Token|undefined)[]);
         const actualColumnByLine = lines.map(line => 0);
@@ -137,10 +145,10 @@ export default class Indenter
             });
         }
 
-        return this.stringify(columnizedLines);
+        return this.stringify(columnizedLines, indentation, lineBreak);
     }
 
-    private stringify(lines: (Token|undefined)[][]): string
+    private stringify(lines: (Token|undefined)[][], indentation: string, lineBreak: string): string
     {
         const stringifiedLines = lines.map(line => "");
 
@@ -158,9 +166,7 @@ export default class Indenter
             }
         }
 
-        //TODO: put original indentation back in the string
-        //TODO: replace line-break type with the same used on input code
-        return stringifiedLines.join("\r\n");
+        return stringifiedLines.map(line => indentation + line).join(lineBreak);
     }
 
     private pad(str: string, length: number, char: string = " "): string
