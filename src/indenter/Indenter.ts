@@ -24,7 +24,21 @@ export default class Indenter
         const lines = this.trimTokens(this.splitTokens(tokens)).filter(l => l.length > 0);
         const lcs = this.executeLCS(lines);
 
-        return this.columnizeTokens(lcs, lines);
+        const indentedCode = this.columnizeTokens(lcs, lines);
+
+        this.ensureSameCode(code, indentedCode);
+
+        return indentedCode;
+    }
+
+    private ensureSameCode(code: string, indentedCode: string): void
+    {
+        const codeWithoutIndentation         = code        .replace(/ /g, "").replace(/\r\n|\r|\n/g, "\n").trim();
+        const indentedCodeWithoutIndentation = indentedCode.replace(/ /g, "").replace(/\r\n|\r|\n/g, "\n").trim();
+
+        if (codeWithoutIndentation !== indentedCodeWithoutIndentation) {
+            throw new Error("The indentation process are trying to change the code. It is a bug, please, open an issue: https://github.com/lmcarreiro/smart-column-indenter");
+        }
     }
 
     private splitTokens(tokens: Token[]): Token[][] {

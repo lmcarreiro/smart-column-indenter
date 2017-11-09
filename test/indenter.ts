@@ -6,11 +6,6 @@ function test(extension: string, code: string, expected: string, config?: Config
     let indenter = new Indenter(config);
     let result = indenter.indent(code, extension);
 
-    assert.equal(
-        result.replace(/ /g, "").trim()
-        , expected.replace(/ /g, "").trim()
-        , "The code is not the same. The indentation process should not change the code.");
-
     assert.equal(result, expected, "The indentation is different than the expected.");
 }
 
@@ -33,8 +28,22 @@ describe('Indenter', () => {
         });
 
 
-
         it('test 2', () => {
+            const code = `
+                const codeWithoutIndentation = code.replace(/ /g, "").replace(/\r\n|\r|\n/, "\n").trim();
+                const indentedCodeWithoutIndentation = indentedCode.replace(/ /g, "").replace(/\r\n|\r|\n/, "\n").trim();
+            `;
+
+            const expected = `
+                const codeWithoutIndentation         = code        .replace(/ /g, "").replace(/\r\n|\r|\n/g, "\n").trim();
+                const indentedCodeWithoutIndentation = indentedCode.replace(/ /g, "").replace(/\r\n|\r|\n/g, "\n").trim();
+            `;
+
+            test("ts", code, expected);
+        });
+
+
+        it('test 3', () => {
             const code = `
                 { label: 'Descrição', name: 'Nome', width: 200, align: 'left', hidden: false, editable: true, edittype: 'text' },
                 { label: 'Unidade de&nbsp;Medida', name: 'UnidadeMedida', width: 100, align: 'left', hidden: modOuMoi, editable: false, edittype: 'text' },
