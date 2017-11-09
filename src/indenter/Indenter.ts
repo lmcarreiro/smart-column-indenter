@@ -117,6 +117,12 @@ export default class Indenter
             });
         }
 
+        while (lines.some((line, i) => actualColumnByLine[i] < line.length)) {
+            lines.forEach((line, i) => {
+                columnizedLines[i].push(actualColumnByLine[i] < line.length ? line[actualColumnByLine[i]++] : undefined);
+            });
+        }
+
         return this.stringify(columnizedLines);
     }
 
