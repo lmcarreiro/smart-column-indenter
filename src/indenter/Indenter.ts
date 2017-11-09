@@ -9,15 +9,12 @@ export default class Indenter
 {
     private config: Config;
 
-    public constructor(config: string|Config) {
-        if (typeof config === "string") {
-            var jsonConfig = fs.readFileSync(config, { encoding: "utf-8" });
-            this.config = JSON.parse(jsonConfig);
-        }
-        else {
-            //TODO: load default config and override with parameter object
-            this.config = config;
-        }
+    public constructor(config?: Config) {
+        const jsonDefaultConfig = fs.readFileSync(`${__dirname}/config.json`, { encoding: "utf-8" });
+        const defaultConfig: { [key: string]: any } = JSON.parse(jsonDefaultConfig);
+        
+        //TODO: load default config and override with parameter object
+        this.config = <Config>{ ...defaultConfig, ...config };
     }
 
     public indent(code: string, extension: string): string

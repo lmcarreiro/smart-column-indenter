@@ -1,8 +1,9 @@
 import * as assert from 'assert';
 import Indenter from '../src/indenter/Indenter';
+import Config from '../src/indenter/Config';
 
-function test(extension: string, code: string, expected: string): void {
-    let indenter = new Indenter(<any>{});
+function test(extension: string, code: string, expected: string, config?: Config): void {
+    let indenter = new Indenter(config);
     let result = indenter.indent(code, extension);
     assert.equal(result, expected);
 }
