@@ -5,7 +5,13 @@ import Config from '../src/indenter/Config';
 function test(extension: string, code: string, expected: string, config?: Config): void {
     let indenter = new Indenter(config);
     let result = indenter.indent(code, extension);
-    assert.equal(result, expected);
+
+    assert.equal(
+        result.replace(/ /g, "").trim()
+        , expected.replace(/ /g, "").trim()
+        , "The code is not the same. The indentation process should not change the code.");
+
+    assert.equal(result, expected, "The indentation is different than the expected.");
 }
 
 describe('Indenter', () => {
