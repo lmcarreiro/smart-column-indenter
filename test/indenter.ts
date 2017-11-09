@@ -43,7 +43,7 @@ describe('Indenter', () => {
                 { label: 'Salário<br/>(R$)', name: 'Salario', width: 100, align: 'right', hidden: !modOuMoi, editable: false, edittype: 'text', formatter: formatFormulaI, formatoptions: formatter2c, sorttype: orderFormula },
                 { label: 'Valor&nbsp;Total<br/>(R$)', name: 'ValorTotal', width: 100, align: 'right', hidden: false, editable: false, edittype: 'text', formatter: formatFormulaI, formatoptions: formatter2c, sorttype: orderFormula },
                 { label: 'Estimativa', name: 'Estimativa', width: 100, align: 'left', hidden: true, editable: false, edittype: 'text' },
-                { label: 'Unidade de Medida (hint)', name: 'UnidadeMedidaDescricao', width: 100, align: 'left', hidden: true, editable: false, edittype: 'text' },
+                { label: 'Unidade de Medida (hint)', name: 'UnidadeMedidaDescricao', width: 100, align: 'left', hidden: true, editable: false, edittype: 'text' }
             `;
             
             const expected = `
@@ -61,7 +61,7 @@ describe('Indenter', () => {
                 { label: 'Salário<br/>(R$)'               , name: 'Salario'               , width: 100, align: 'right', hidden: !modOuMoi , editable: false   , edittype: 'text'  , formatter: formatFormulaI, formatoptions: formatter2c, sorttype: orderFormula                                 },
                 { label: 'Valor&nbsp;Total<br/>(R$)'      , name: 'ValorTotal'            , width: 100, align: 'right', hidden: false     , editable: false   , edittype: 'text'  , formatter: formatFormulaI, formatoptions: formatter2c, sorttype: orderFormula                                 },
                 { label: 'Estimativa'                     , name: 'Estimativa'            , width: 100, align: 'left' , hidden: true      , editable: false   , edittype: 'text'                                                                                                                  },
-                { label: 'Unidade de Medida (hint)'       , name: 'UnidadeMedidaDescricao', width: 100, align: 'left' , hidden: true      , editable: false   , edittype: 'text'                                                                                                                  },
+                { label: 'Unidade de Medida (hint)'       , name: 'UnidadeMedidaDescricao', width: 100, align: 'left' , hidden: true      , editable: false   , edittype: 'text'                                                                                                                  }
             `;
 
             test("js", code, expected);

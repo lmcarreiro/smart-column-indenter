@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as sc from './scanner';
 import LCS     from './LCS';
+import Sequence from './LCS/Sequence';
 import Config  from './Config';
 import Token   from './Token';
 
@@ -24,9 +25,8 @@ export default class Indenter
         const scanner = sc.ScannerFactory.getScanner(this.config, extension);
         const tokens = scanner.scan(code);
         const lines = this.trimTokens(this.splitTokens(tokens)).filter(l => l.length > 0);
-        const sequences = lines.map(line => line.map(token => this.token2string(token)));
+        const lcs = this.executeLCS(lines);
 
-        const lcs = new LCS().execute(sequences);
         return this.columnizeTokens(lcs, lines);
     }
 
@@ -52,6 +52,44 @@ export default class Indenter
         }
 
         return lines;
+    }
+
+    private executeLCS(lines: Token[][]): Sequence
+    {
+        const treatedLines = this.normalizeMissingComma(lines);
+        const sequences = treatedLines.map(line => line.map(token => this.token2string(token)));
+
+        return new LCS().execute(sequences);
+    }
+
+    /**
+     * Inside and object literal, array literal or a function parameter list where there is one item per line,
+     * it's common to have a missing comma at the end of the last line (or the beginning of the first line), so
+     * there is no way of this comma be part of the LCS, or if it is, it is not what we want. Then, it's best
+     * to remove it before execute the LCS
+     */
+    private normalizeMissingComma(lines: Token[][]): Token[][]
+    {
+        const allButFirstStartsWithComma = lines.every((line, i) => this.xor(line[0].content === ",", i === 0));
+        const allButLastEndsWithComma = lines.every((line, i) => this.xor(line[line.length-1].content === ",", i === (lines.length-1)));
+
+        if (allButFirstStartsWithComma) {
+            return lines.map((line, i) => i === 0 ? line : line.slice(1));
+        }
+        else if (allButLastEndsWithComma) {
+            return lines.map((line, i) => i === (lines.length-1) ? line : line.slice(0, -1));
+        }
+        else {
+            return lines;
+        }
+    }
+
+    /**
+     * Binary XOR operation with boolean (the ^ operator just works with numbers)
+     */
+    private xor(left: boolean, right: boolean): boolean
+    {
+        return !!(+left ^ +right);
     }
 
     private columnizeTokens(lcs: string[], lines: Token[][]): string
