@@ -5,7 +5,8 @@ export default abstract class BaseLCS
 {
     public execute(sequences: Sequence[]): Sequence
     {
-        sequences = this.filterSequences(sequences);
+        sequences = this.filterSequencesByIntersection(sequences);
+        sequences = this.removeDuplicates(sequences);
 
         const cutHead = this.cutCommonHead(sequences);
         sequences = cutHead.sequencesWithoutHead;
@@ -49,7 +50,7 @@ export default abstract class BaseLCS
     /**
      * Filter the sequences removing elements that aren't present in all sequences
      */
-    private filterSequences(sequences: Sequence[]): Sequence[]
+    private filterSequencesByIntersection(sequences: Sequence[]): Sequence[]
     {
         const distinctValuesPerSequence = sequences.map(s => new Set(s));
         
@@ -59,6 +60,16 @@ export default abstract class BaseLCS
         const intersection = new Set([...smallerSet].filter(e => distinctValuesPerSequence.every(s => s.has(e))));
 
         return sequences.map(s => s.filter(e => intersection.has(e)));
+    }
+
+    /**
+     * Remove repeated sequences
+     */
+    private removeDuplicates(sequences: Sequence[]): Sequence[]
+    {
+        const stringfiedSequences = sequences.map(s => JSON.stringify(s));
+        const uniqueSequences = Array.from(new Set(stringfiedSequences));
+        return uniqueSequences.map(s => JSON.parse(s));
     }
 
     private cutCommonHead(sequences: Sequence[]): { commonHead: Sequence, sequencesWithoutHead: Sequence[] }
