@@ -30,9 +30,10 @@ export default class Indenter
         const scanner = sc.ScannerFactory.getScanner(this.config, extension);
         const tokens = scanner.scan(code);
         const lines = this.trimTokens(this.splitTokens(tokens)).filter(l => l.length > 0);
-        const lcs = this.executeLCS(lines);
+        const intersectionWords = this.wordsIntersection(lines);
+        const lcs = this.executeLCS(lines, intersectionWords);
 
-        const indentedCode = this.columnizeTokens(lcs, lines, indentation, lineBreak);
+        const indentedCode = this.columnizeTokens(lcs, lines, intersectionWords, indentation, lineBreak);
 
         this.ensureSameCode(code, indentedCode);
 
@@ -73,10 +74,10 @@ export default class Indenter
         return lines;
     }
 
-    private executeLCS(lines: Token[][]): Sequence
+    private executeLCS(lines: Token[][], intersectionWords: Set<string>): Sequence
     {
         const treatedLines = this.normalizeMissingComma(lines);
-        const sequences = treatedLines.map(line => line.map(token => this.token2string(token)));
+        const sequences = treatedLines.map(line => line.map(token => this.token2string(token, intersectionWords)));
 
         return new LCS().execute(sequences);
     }
@@ -103,6 +104,12 @@ export default class Indenter
         }
     }
 
+    private wordsIntersection(lines: Token[][]): Set<string>
+    {
+        const wordsByLine = lines.map(line => line.filter(t => t.kind === "word").map(t => t.content || ""));
+        return Sequence.intersection(wordsByLine);
+    }
+
     /**
      * Binary XOR operation with boolean (the ^ operator just works with numbers)
      */
@@ -111,18 +118,18 @@ export default class Indenter
         return !!(+left ^ +right);
     }
 
-    private columnizeTokens(lcs: string[], lines: Token[][], indentation: string, lineBreak: string): string
+    private columnizeTokens(lcs: string[], lines: Token[][], intersectionWords: Set<string>, indentation: string, lineBreak: string): string
     {
         const columnizedLines = lines.map(line => [] as (Token|undefined)[]);
         const actualColumnByLine = lines.map(line => 0);
 
-        for (const tokenKind of lcs) {
+        for (const lcsToken of lcs) {
             let tokenWithOtherKind: boolean;
 
             do {
                 tokenWithOtherKind = false;
                 lines.forEach((line, i) => {
-                    if (this.token2string(line[actualColumnByLine[i]]) !== tokenKind) {
+                    if (this.token2string(line[actualColumnByLine[i]], intersectionWords) !== lcsToken) {
                         tokenWithOtherKind = true;
                         columnizedLines[i].push(line[actualColumnByLine[i]]);
                         actualColumnByLine[i]++;
@@ -174,11 +181,12 @@ export default class Indenter
         return str + new Array((length - str.length) + 1).join(char);
     }
 
-    private token2string(token: Token): string
+    private token2string(token: Token, intersectionWords: Set<string>): string
     {
         switch (token.kind) {
             case "symbol": return token.content || "";
             case "reserved word": return token.content || "";
+            case "word": return intersectionWords.has(token.content || "") ? `${token.kind}[${token.content}]` : token.kind;
             default: return token.kind;
         }
     }

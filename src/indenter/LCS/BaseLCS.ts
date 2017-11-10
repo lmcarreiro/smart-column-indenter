@@ -52,13 +52,7 @@ export default abstract class BaseLCS
      */
     private filterSequencesByIntersection(sequences: Sequence[]): Sequence[]
     {
-        const distinctValuesPerSequence = sequences.map(s => new Set(s));
-        
-        let smallerSet = distinctValuesPerSequence[0];
-        distinctValuesPerSequence.forEach(s => smallerSet = s.size < smallerSet.size ? s : smallerSet);
-
-        const intersection = new Set([...smallerSet].filter(e => distinctValuesPerSequence.every(s => s.has(e))));
-
+        const intersection = Sequence.intersection(sequences);
         return sequences.map(s => s.filter(e => intersection.has(e)));
     }
 
