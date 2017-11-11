@@ -30,13 +30,13 @@ describe('Indenter', () => {
 
         it('test 2', () => {
             const code = `
-                const codeWithoutIndentation = code.replace(/ /g, "").replace(/\r\n|\r|\n/, "\n").trim();
-                const indentedCodeWithoutIndentation = indentedCode.replace(/ /g, "").replace(/\r\n|\r|\n/, "\n").trim();
+                const codeWithoutIndentation = code.replace(/ /g, "").replace(/\\r\\n|\\r|\\n/, "\\n").trim();
+                const indentedCodeWithoutIndentation = indentedCode.replace(/ /g, "").replace(/\\r\\n|\\r|\\n/, "\\n").trim();
             `;
 
             const expected = `
-                const codeWithoutIndentation         = code        .replace(/ /g, "").replace(/\r\n|\r|\n/g, "\n").trim();
-                const indentedCodeWithoutIndentation = indentedCode.replace(/ /g, "").replace(/\r\n|\r|\n/g, "\n").trim();
+                const codeWithoutIndentation         = code        .replace(/ /g, "").replace(/\\r\\n|\\r|\\n/g, "\\n").trim();
+                const indentedCodeWithoutIndentation = indentedCode.replace(/ /g, "").replace(/\\r\\n|\\r|\\n/g, "\\n").trim();
             `;
 
             test("ts", code, expected);
