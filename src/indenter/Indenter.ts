@@ -29,7 +29,7 @@ export default class Indenter
 
         const scanner = sc.ScannerFactory.getScanner(this.config, extension);
         const tokens = scanner.scan(code);
-        const lines = this.trimTokens(this.splitTokens(tokens)).filter(l => l.length > 0);
+        const lines = this.splitTokens(tokens).filter(l => l.length > 0);
         const intersectionWords = this.wordsIntersection(lines);
         const lcs = this.executeLCS(lines, intersectionWords);
 
@@ -64,16 +64,7 @@ export default class Indenter
 
         return lines;
     }
-
-    private trimTokens(lines: Token[][]): Token[][] {
-        for (let i = 0; i < lines.length; i++) {
-            lines[i] = lines[i].length && lines[i][0].kind === "space"                  ? lines[i].slice(1)     : lines[i];
-            lines[i] = lines[i].length && lines[i][lines[i].length-1].kind === "space"  ? lines[i].slice(0, -1) : lines[i];
-        }
-
-        return lines;
-    }
-
+    
     private executeLCS(lines: Token[][], intersectionWords: Set<string>): Sequence
     {
         const treatedLines = this.normalizeMissingComma(lines);

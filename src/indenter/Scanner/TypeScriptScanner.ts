@@ -24,15 +24,13 @@ export default class TypeScriptScanner extends Scanner {
     }
 
     private readSymbol(): Token {
+        while(this.code[this.position] === " ") {
+            this.position++;
+        }
+
         let nextChar = this.code[this.position];
 
-        if (nextChar === " ") {
-            while(this.code[this.position] === " ") {
-                this.position++;
-            }
-            return new Token("space", " ");
-        }
-        else if (nextChar.match(/\r|\n|\r\n/)) {
+        if (nextChar.match(/\r|\n|\r\n/)) {
             this.position++;
             return new Token("line-break");
         }
@@ -48,14 +46,16 @@ export default class TypeScriptScanner extends Scanner {
             this.position++;
             return new Token("symbol", nextChar);
         }
-        else if (nextChar.match(/["']/)) {
+        else if (nextChar.match(/["'`\/]/)) {
             this.position++;
             let stringDelimiter = nextChar;
             let content = [nextChar];
+            let prevChar = "";
             do {
+                prevChar = nextChar;
                 nextChar = this.code[this.position++];
                 content.push(nextChar);
-            } while(nextChar !== stringDelimiter);
+            } while(nextChar !== stringDelimiter || prevChar === "\\");
             return new Token("string", content.join(""));
         }
         else {
