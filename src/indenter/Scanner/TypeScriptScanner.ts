@@ -12,7 +12,7 @@ export default class TypeScriptScanner extends Scanner {
     }
 
     public scan(code: string): Token[] {
-        this.code = code;
+        this.code = code.trim();
         this.position = 0;
         this.tokens = [];
         
