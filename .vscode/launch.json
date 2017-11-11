@@ -6,6 +6,21 @@
             "request": "launch",
             "name": "Index",
             "program": "${workspaceRoot}/src/indenter/index.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha Tests",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "-u",
+                "tdd",
+                "--timeout",
+                "999999",
+                "--colors",
+                "${workspaceFolder}/test"
+            ],
+            "internalConsoleOptions": "openOnSessionStart"
         }
     ]
 }
