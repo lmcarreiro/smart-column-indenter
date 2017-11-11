@@ -19,7 +19,7 @@ export default class Indenter
 
     public indent(code: string, extension: string): string
     {
-        const numLines = (code.trim().match(/\r\n|\r|\n/g) || []).length;
+        const numLines = (code.trim().match(/\r\n|\r|\n/g) || []).length + 1;
         if (numLines < 2) {
             throw new Error("The code to indent must have at least 2 lines of code.");
         }
