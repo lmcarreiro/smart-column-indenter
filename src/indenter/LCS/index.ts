@@ -1,3 +1,3 @@
-import LCS from "./RecursiveInGroupsLCS";
+import LCS from "./LCS";
 
 export default LCS;
