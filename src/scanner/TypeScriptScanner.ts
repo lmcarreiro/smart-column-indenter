@@ -42,7 +42,7 @@ export default class TypeScriptScanner extends Scanner {
             } while(nextChar.match(/[a-zA-Z0-9_$.]/));
             return this.createWordToken(content.join(""));
         }
-        else if (nextChar.match(/[\[\](){}:;,=<>!%/*+-]/)) {
+        else if (nextChar.match(/[\[\](){}:;,.=<>!%/*+-]/)) {
             this.position++;
             return new Token("symbol", nextChar);
         }
