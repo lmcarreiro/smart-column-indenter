@@ -1,5 +1,5 @@
 {
-    "version": "0.0.1",
+    "version": "0.0.1-dev.20171112",
     "name": "smart-column-indenter",
     "description": "A smart source code indenter that indent the code into columns",
     "keywords": [
@@ -27,6 +27,7 @@
         "typescript": "latest"
     },
     "scripts": {
+        "prepack": "npm run build",
         "start": "npm run build && node src/indenter/index.js",
         "test": "npm run build && npm run build:test && mocha",
         "build": "tsc -p tsconfig.json",
