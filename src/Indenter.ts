@@ -153,18 +153,33 @@ export default class Indenter
         for (let column = 0; column < lines[0].length; column++) {
             const lengths = lines.map(l => {
                 const token = l[column];
-                return token && token.content ? token.content.length : 0;
+                return this.stringifyToken(token).length;
             });
             const maxLength = Math.max(...lengths);
 
             for (let i = 0; i < lines.length; i++) {
                 const token = lines[i][column];
-                const content = (token && token.content) || "";
+                const content = this.stringifyToken(token);
                 stringifiedLines[i] += this.pad(content, maxLength);
             }
         }
 
         return stringifiedLines.map(line => indentation + line).join(lineBreak);
+    }
+
+    private stringifyToken(token: Token|undefined): string
+    {
+        if (token && token.content) {
+            let content = token.content;
+
+            if (token.kind === "symbol") {
+                content += " ";
+            }
+
+            return content;
+        }
+
+        return "";
     }
 
     private pad(str: string, length: number, char: string = " "): string
