@@ -170,13 +170,7 @@ export default class Indenter
     private stringifyToken(token: Token|undefined): string
     {
         if (token && token.content) {
-            let content = token.content;
-
-            if (token.kind === "symbol") {
-                content += " ";
-            }
-
-            return content;
+            return token.content + " ";
         }
 
         return "";
