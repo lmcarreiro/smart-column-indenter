@@ -1,4 +1,5 @@
 .vscode
 .editorconfig
 .gitattributes
-tsconfig.json
+tsconfig*.json
+test
