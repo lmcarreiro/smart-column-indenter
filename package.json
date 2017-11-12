@@ -1,5 +1,5 @@
 {
-    "version": "0.0.1-dev.20171112.6",
+    "version": "0.0.1-dev.20171112.7",
     "name": "smart-column-indenter",
     "description": "A smart source code indenter that indent the code into columns",
     "keywords": [
@@ -18,11 +18,13 @@
     "bugs": {
         "url": "https://github.com/lmcarreiro/smart-column-indenter/issues"
     },
+    "dependencies": {
+        "multiple-lcs": "latest"
+    },
     "devDependencies": {
         "@types/node": "latest",
         "@types/request": "latest",
         "@types/mocha": "latest",
-        "multiple-lcs": "latest",
         "request": "latest",
         "mocha": "latest",
         "typescript": "latest"
