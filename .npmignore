@@ -3,3 +3,4 @@
 .gitattributes
 tsconfig*.json
 test
+smart-column-indenter-*.tgz

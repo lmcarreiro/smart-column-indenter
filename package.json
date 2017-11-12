@@ -1,5 +1,5 @@
 {
-    "version": "0.0.1-dev.20171112",
+    "version": "0.0.1-dev.20171112.2",
     "name": "smart-column-indenter",
     "description": "A smart source code indenter that indent the code into columns",
     "keywords": [
