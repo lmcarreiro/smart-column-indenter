@@ -1,6 +1,6 @@
 import * as assert from 'assert';
-import * as sc from '../src/indenter/scanner';
-import Config from '../src/indenter/Config';
+import * as sc from '../src/scanner';
+import Config from '../src/Config';
 
 describe('Scanner', () => {
 

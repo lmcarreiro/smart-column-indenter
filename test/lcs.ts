@@ -1,6 +1,6 @@
 import * as assert          from 'assert';
-import Sequence             from "../src/indenter/LCS/Sequence";
-import RecursiveInGroupsLCS from "../src/indenter/LCS/RecursiveInGroupsLCS";
+import Sequence             from "../src/LCS/Sequence";
+import RecursiveInGroupsLCS from "../src/LCS/RecursiveInGroupsLCS";
 
 function test(sequences: string[], expectedLCS: string): void
 {

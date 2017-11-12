@@ -5,7 +5,7 @@
             "type": "node",
             "request": "launch",
             "name": "Index",
-            "program": "${workspaceRoot}/src/indenter/index.js"
+            "program": "${workspaceRoot}/src/index.js"
         },
         {
             "type": "node",

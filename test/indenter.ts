@@ -1,6 +1,6 @@
 import * as assert from 'assert';
-import Indenter from '../src/indenter/Indenter';
-import Config from '../src/indenter/Config';
+import Indenter from '../src/Indenter';
+import Config from '../src/Config';
 
 function test(extension: string, code: string, expected: string, config?: Config): void {
     let indenter = new Indenter(config);
@@ -16,12 +16,12 @@ describe('Indenter', () => {
         it('test 1', () => {
             const code = `
                 import * as assert from 'assert';
-                import Indenter from '../src/indenter/Indenter';
+                import Indenter from '../src/Indenter';
             `;
 
             const expected = `
-                import * as assert from 'assert'                  ;
-                import Indenter    from '../src/indenter/Indenter';
+                import * as assert from 'assert'         ;
+                import Indenter    from '../src/Indenter';
             `;
 
             test("ts", code, expected);
