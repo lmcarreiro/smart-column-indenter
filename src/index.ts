@@ -1,12 +1,9 @@
-import Indenter             from "./Indenter";
-import Sequence             from "./LCS/Sequence";
-import RecursiveInGroupsLCS from "./LCS/RecursiveInGroupsLCS";
+import Indenter from "./Indenter";
 
 main();
 
 function main() {
     try {
-        testLCS();
         testIndenter();
     }
     catch (error) {
@@ -43,34 +40,4 @@ function testIndenter(): void
 
     console.log("Indented code:");
     console.log(indentedCode);
-}
-
-function testLCS(): void
-{
-    const sequences = [
-        "xaaabbbx",
-        "aaaxxbbb",
-        "xcccdddx",
-        "cccxxddd"
-    ];
-    const expected = "xx";
-
-    test(sequences, expected);
-}
-
-function test(sequences: string[], expectedLCS: string): void
-{
-    testWithSequences(sequences.map(str => str.split("")), expectedLCS.split(""));
-}
-
-function testWithSequences(sequences: Sequence[], expectedLCS: Sequence): void
-{
-    console.log("Sequences: ");
-    console.log(sequences);
-
-    let lcs = new RecursiveInGroupsLCS();
-    let result = lcs.execute(sequences);
-
-    console.log("LCS: ");
-    console.log(result);
 }

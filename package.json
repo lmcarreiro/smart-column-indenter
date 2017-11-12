@@ -1,5 +1,5 @@
 {
-    "version": "0.0.1-dev.20171112.4",
+    "version": "0.0.1-dev.20171112.5",
     "name": "smart-column-indenter",
     "description": "A smart source code indenter that indent the code into columns",
     "keywords": [
@@ -22,6 +22,7 @@
         "@types/node": "latest",
         "@types/request": "latest",
         "@types/mocha": "latest",
+        "multiple-lcs": "latest",
         "request": "latest",
         "mocha": "latest",
         "typescript": "latest"

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as sc from './scanner';
-import LCS     from './LCS';
-import Sequence from './LCS/Sequence';
+import LCS     from 'multiple-lcs/src/LCS';
+import Sequence from 'multiple-lcs/src/Sequence';
 import Config  from './Config';
 import Token   from './Token';
 
