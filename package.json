@@ -18,6 +18,7 @@
     "bugs": {
         "url": "https://github.com/lmcarreiro/smart-column-indenter/issues"
     },
+    "main": "index.js",
     "dependencies": {
         "@types/lodash.intersection": "^4.4.3",
         "lodash.intersection": "^4.4.0",
@@ -33,9 +34,8 @@
     },
     "scripts": {
         "prepack": "npm run build",
-        "start": "npm run build && node src/index.js",
-        "test": "npm run build && npm run build:test && mocha",
-        "build": "tsc -p tsconfig.json",
-        "build:test": "tsc -p tsconfig-test.json"
+        "start": "npm run build && node test/main.js",
+        "test": "npm run build && mocha",
+        "build": "tsc -p tsconfig.json"
     }
 }

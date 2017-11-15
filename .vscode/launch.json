@@ -4,8 +4,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Index",
-            "program": "${workspaceRoot}/src/index.js"
+            "name": "Main Test",
+            "program": "${workspaceRoot}/test/main.js"
         },
         {
             "type": "node",

@@ -12,7 +12,9 @@
         "sourceMap": true
     },
     "include": [
+        "./index.ts",
         "./src",
+        "./test",
         "node_modules/@types"
     ],
     "exclude": [

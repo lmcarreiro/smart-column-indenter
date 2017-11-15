@@ -1,4 +1,4 @@
-import Indenter from "./Indenter";
+import Indenter from "../src/Indenter";
 
 main();
 
