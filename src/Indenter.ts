@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as sc from './scanner';
-import LCS     from 'multiple-lcs/src/LCS';
-import Sequence from 'multiple-lcs/src/Sequence';
+import LCS from 'multiple-lcs';
+import intersection = require('lodash.intersection');
 import Config  from './Config';
 import Token   from './Token';
 
@@ -65,7 +65,7 @@ export default class Indenter
         return lines;
     }
     
-    private executeLCS(lines: Token[][], intersectionWords: Set<string>): Sequence
+    private executeLCS(lines: Token[][], intersectionWords: Set<string>): string[]
     {
         const treatedLines = this.normalizeMissingComma(lines);
         const sequences = treatedLines.map(line => line.map(token => this.token2string(token, intersectionWords)));
@@ -98,7 +98,7 @@ export default class Indenter
     private wordsIntersection(lines: Token[][]): Set<string>
     {
         const wordsByLine = lines.map(line => line.filter(t => t.kind === "word").map(t => t.content || ""));
-        return Sequence.intersection(wordsByLine);
+        return new Set(intersection(...wordsByLine));
     }
 
     /**
