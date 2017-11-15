@@ -1,40 +1,72 @@
-import Scanner from "./base/Scanner";
-import Token, { TokenType } from "../Token";
+import Language from "../Language";
+import LineOfCode from '../LineOfCode';
+import TypeScriptToken, * as token from "./TypeScriptToken";
 
-export default class TypeScriptScanner extends Scanner {
+export default class TypeScriptLanguage extends Language<TypeScriptToken> {
 
     private code: string;
     private position: number;
-    private tokens: Token[];
+    private tokens: TypeScriptToken[];
 
     private endOfCode(): boolean {
         return this.position >= this.code.length;
     }
 
-    public scan(code: string): Token[] {
-        this.code = code.trim();
-        this.position = 0;
-        this.tokens = [];
-        
-        do  {
-            this.tokens.push(this.readSymbol());
-        } while(!this.endOfCode());
-
-        return this.tokens;
+    public token2string(token: TypeScriptToken, intersectionWords: Set<string>): string
+    {
+        switch (token.kind) {
+            case "symbol": return token.content || "";
+            case "reserved word": return token.content || "";
+            case "word": return intersectionWords.has(token.content || "") ? `${token.kind}[${token.content}]` : token.kind;
+            default: return token.kind;
+        }
     }
 
-    private readSymbol(): Token {
+    public stringify(lines: (TypeScriptToken|undefined)[][], indentation: string, lineBreak: string): string
+    {
+        const stringifiedLines = lines.map(line => "");
+
+        for (let column = 0; column < lines[0].length; column++) {
+            const lengths = lines.map(l => {
+                const token = l[column];
+                return (token && token.content || "").length;
+            });
+            const maxLength = Math.max(...lengths);
+
+            for (let i = 0; i < lines.length; i++) {
+                const token = lines[i][column];
+                const content = token && token.content || "";
+                stringifiedLines[i] += this.pad(content, maxLength);
+            }
+        }
+
+        return stringifiedLines.map(line => indentation + line).join(lineBreak);
+    }
+
+    public tokenize(lines: string[]): LineOfCode<TypeScriptToken>[]
+    {
+        return lines.map(line => {
+            this.code = line;
+            this.position = 0;
+            this.tokens = [];
+            
+            do  {
+                this.tokens.push(this.readSymbol());
+            } while(!this.endOfCode());
+
+            return this.tokens;
+        });
+    }
+
+    private readSymbol(): TypeScriptToken
+    {
         while(this.code[this.position] === " ") {
             this.position++;
         }
 
         let nextChar = this.code[this.position];
 
-        if (nextChar.match(/\r|\n|\r\n/)) {
-            this.position++;
-            return new Token("line-break");
-        }
-        else if (nextChar.match(/[a-zA-Z0-9_]/)) {
+        if (nextChar.match(/[a-zA-Z0-9_]/)) {
             let content = [];
             do {
                 content.push(nextChar);
@@ -44,7 +76,7 @@ export default class TypeScriptScanner extends Scanner {
         }
         else if (nextChar.match(/[\[\](){}:;,.=<>!%/*+-]/)) {
             this.position++;
-            return new Token("symbol", nextChar);
+            return new TypeScriptToken("symbol", nextChar);
         }
         else if (nextChar.match(/["'`\/]/)) {
             this.position++;
@@ -56,130 +88,21 @@ export default class TypeScriptScanner extends Scanner {
                 nextChar = this.code[this.position++];
                 content.push(nextChar);
             } while(nextChar !== stringDelimiter || prevChar === "\\");
-            return new Token("string", content.join(""));
+            return new TypeScriptToken("string", content.join(""));
         }
         else {
             throw new Error("Invalid charater!");
         }
     }
 
-    private createWordToken(content: string): Token
+    private createWordToken(content: string): TypeScriptToken
     {
-        if (TypeScriptScanner.reservedWords.indexOf(content) > -1) {
-            const type = TypeScriptScanner.reservedWordType[content] || "reserved word";
-            return new Token(type, content);
+        if (token.reservedWords.indexOf(content) > -1) {
+            const type = token.reservedWordType[content] || "reserved word";
+            return new TypeScriptToken(type, content);
         }
         else {
-            return new Token("word", content);
+            return new TypeScriptToken("word", content);
         }
     }
-
-    private static reservedWordType: { [word: string]: TokenType } = {
-        "private": "access modifier",
-        "protected": "access modifier",
-        "public": "access modifier",
-
-        "var": "variable declaration",
-        "let": "variable declaration",
-        "const": "variable declaration",
-
-        "import": "import export",
-        "export": "import export",
-
-        "any": "object type",
-        "boolean": "object type",
-        "number": "object type",
-        "string": "object type",
-        "object": "object type",
-        "never": "object type",
-        "void": "object type",
-
-        "case": "switch option",
-        "default": "switch option",
-
-        "break": "loop control flow",
-        "continue": "loop control flow",
-
-        "false": "value",
-        "null": "value",
-        "true": "value",
-        "undefined": "value",
-
-        "in": "for iterator",
-        "of": "for iterator",
-    }
-
-    private static reservedWords = [
-        "abstract",
-        "any",
-        "as",
-        "boolean",
-        "break",
-        "case",
-        "catch",
-        "class",
-        "continue",
-        "const",
-        "constructor",
-        "debugger",
-        "declare",
-        "default",
-        "delete",
-        "do",
-        "else",
-        "enum",
-        "export",
-        "extends",
-        "false",
-        "finally",
-        "for",
-        "from",
-        "function",
-        "get",
-        "if",
-        "implements",
-        "import",
-        "in",
-        "instanceof",
-        "interface",
-        "is",
-        "keyof",
-        "let",
-        "module",
-        "namespace",
-        "never",
-        "new",
-        "null",
-        "number",
-        "object",
-        "package",
-        "private",
-        "protected",
-        "public",
-        "readonly",
-        "require",
-        "global",
-        "return",
-        "set",
-        "static",
-        "string",
-        "super",
-        "switch",
-        "symbol",
-        "this",
-        "throw",
-        "true",
-        "try",
-        "type",
-        "typeof",
-        "undefined",
-        "var",
-        "void",
-        "while",
-        "with",
-        "yield",
-        "async",
-        "await",
-        "of",
-    ];
 }

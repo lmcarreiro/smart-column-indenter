@@ -35,8 +35,8 @@ function testIndenter(): void
     `;
     console.log(code);
 
-    let indenter = new Indenter();
-    let indentedCode = indenter.indent(code, "ts");
+    let indenter = new Indenter(code, "ts");
+    let indentedCode = indenter.indent();
 
     console.log("Indented code:");
     console.log(indentedCode);

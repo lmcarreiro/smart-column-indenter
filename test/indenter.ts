@@ -3,8 +3,8 @@ import Indenter from '../src/Indenter';
 import Config from '../src/Config';
 
 function test(extension: string, code: string, expected: string, config?: Config): void {
-    let indenter = new Indenter(config);
-    let result = indenter.indent(code, extension);
+    let indenter = new Indenter(code, extension, config);
+    let result = indenter.indent();
 
     assert.equal(result, expected, "The indentation is different than the expected.");
 }

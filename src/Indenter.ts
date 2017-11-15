@@ -1,41 +1,52 @@
 import * as fs from 'fs';
-import * as sc from './scanner';
+import LanguageFactory from './languages/LanguageFactory';
+import Language from './languages/Language';
+import Token from './languages/Token';
 import LCS from 'multiple-lcs';
 import intersection = require('lodash.intersection');
 import Config  from './Config';
-import Token   from './Token';
 
 export default class Indenter
 {
+    private code: string;
+    private extension: string;
     private config: Config;
+    private language: Language<Token>;
 
-    public constructor(config?: Config) {
-        const jsonDefaultConfig = fs.readFileSync(`${__dirname}/config.json`, { encoding: "utf-8" });
-        const defaultConfig: { [key: string]: any } = JSON.parse(jsonDefaultConfig);
-        
-        //TODO: load default config and override with parameter object
-        this.config = <Config>{ ...defaultConfig, ...config };
+    public constructor(code: string, extension: string, config?: Config) {
+        this.code = code;
+        this.extension = extension;
+        this.config = this.overrideDefaultConfig(config);
+        this.language = LanguageFactory.getLanguage(this.config, this.extension);
     }
 
-    public indent(code: string, extension: string): string
+    private overrideDefaultConfig(newConfig?: Config): Config
     {
-        const numLines = (code.trim().match(/\r\n|\r|\n/g) || []).length + 1;
+        const jsonDefaultConfig = fs.readFileSync(`${__dirname}/config.json`, { encoding: "utf-8" });
+        const defaultConfig: { [key: string]: any } = JSON.parse(jsonDefaultConfig);
+
+        return <Config>{ ...defaultConfig, ...newConfig };
+    }
+
+    public indent(): string
+    {
+        const numLines = (this.code.trim().match(/\r\n|\r|\n/g) || []).length + 1;
         if (numLines < 2) {
             throw new Error("The code to indent must have at least 2 lines of code.");
         }
 
-        const lineBreak = (code.match(/\r\n|\r|\n/) || ["\n"])[0];
-        const indentation = code.trim().split(/\r\n|\r|\n/g)[1].replace(/(\s+).*/, "$1");
+        const linesOfCode = this.code.split(/\r\n|\r|\n/).map(l => l.trim()).filter(l => l !== "");
+        const linesOfTokens = this.language.tokenize(linesOfCode);
+        const intersectionWords = this.wordsIntersection(linesOfTokens);
+        const lcs = this.executeLCS(linesOfTokens, intersectionWords);
 
-        const scanner = sc.ScannerFactory.getScanner(this.config, extension);
-        const tokens = scanner.scan(code);
-        const lines = this.splitTokens(tokens).filter(l => l.length > 0);
-        const intersectionWords = this.wordsIntersection(lines);
-        const lcs = this.executeLCS(lines, intersectionWords);
+        const lineBreak = (this.code.match(/\r\n|\r|\n/) || ["\n"])[0];
+        const indentation = this.code.trim().split(/\r\n|\r|\n/g)[1].replace(/(\s+).*/, "$1");
 
-        const indentedCode = this.columnizeTokens(lcs, lines, intersectionWords, indentation, lineBreak);
+        const columnizedTokens = this.columnizeTokens(lcs, linesOfTokens, intersectionWords, indentation, lineBreak);
+        const indentedCode = this.language.stringify(columnizedTokens, indentation, lineBreak)
 
-        this.ensureSameCode(code, indentedCode);
+        this.ensureSameCode(this.code, indentedCode);
 
         return indentedCode;
     }
@@ -64,11 +75,11 @@ export default class Indenter
 
         return lines;
     }
-    
+
     private executeLCS(lines: Token[][], intersectionWords: Set<string>): string[]
     {
         const treatedLines = this.normalizeMissingComma(lines);
-        const sequences = treatedLines.map(line => line.map(token => this.token2string(token, intersectionWords)));
+        const sequences = treatedLines.map(line => line.map(token => this.language.token2string(token, intersectionWords)));
 
         return new LCS().execute(sequences);
     }
@@ -109,7 +120,7 @@ export default class Indenter
         return !!(+left ^ +right);
     }
 
-    private columnizeTokens(lcs: string[], lines: Token[][], intersectionWords: Set<string>, indentation: string, lineBreak: string): string
+    private columnizeTokens(lcs: string[], lines: Token[][], intersectionWords: Set<string>, indentation: string, lineBreak: string): (Token|undefined)[][]
     {
         const columnizedLines = lines.map(line => [] as (Token|undefined)[]);
         const actualColumnByLine = lines.map(line => 0);
@@ -120,7 +131,7 @@ export default class Indenter
             do {
                 tokenWithOtherKind = false;
                 lines.forEach((line, i) => {
-                    if (this.token2string(line[actualColumnByLine[i]], intersectionWords) !== lcsToken) {
+                    if (this.language.token2string(line[actualColumnByLine[i]], intersectionWords) !== lcsToken) {
                         tokenWithOtherKind = true;
                         columnizedLines[i].push(line[actualColumnByLine[i]]);
                         actualColumnByLine[i]++;
@@ -143,51 +154,6 @@ export default class Indenter
             });
         }
 
-        return this.stringify(columnizedLines, indentation, lineBreak);
-    }
-
-    private stringify(lines: (Token|undefined)[][], indentation: string, lineBreak: string): string
-    {
-        const stringifiedLines = lines.map(line => "");
-
-        for (let column = 0; column < lines[0].length; column++) {
-            const lengths = lines.map(l => {
-                const token = l[column];
-                return this.stringifyToken(token).length;
-            });
-            const maxLength = Math.max(...lengths);
-
-            for (let i = 0; i < lines.length; i++) {
-                const token = lines[i][column];
-                const content = this.stringifyToken(token);
-                stringifiedLines[i] += this.pad(content, maxLength);
-            }
-        }
-
-        return stringifiedLines.map(line => indentation + line).join(lineBreak);
-    }
-
-    private stringifyToken(token: Token|undefined): string
-    {
-        if (token && token.content) {
-            return token.content + " ";
-        }
-
-        return "";
-    }
-
-    private pad(str: string, length: number, char: string = " "): string
-    {
-        return str + new Array((length - str.length) + 1).join(char);
-    }
-
-    private token2string(token: Token, intersectionWords: Set<string>): string
-    {
-        switch (token.kind) {
-            case "symbol": return token.content || "";
-            case "reserved word": return token.content || "";
-            case "word": return intersectionWords.has(token.content || "") ? `${token.kind}[${token.content}]` : token.kind;
-            default: return token.kind;
-        }
+        return columnizedLines;
     }
 }

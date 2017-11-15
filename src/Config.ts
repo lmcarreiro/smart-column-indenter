@@ -1,5 +1,5 @@
 export default interface IndenterConfig {
-    scannerExtensionsMap: { [scannerName: string]: Extensions }
+    languageExtensionsMap: { [language: string]: Extensions }
 }
 
 type Extensions = string[];

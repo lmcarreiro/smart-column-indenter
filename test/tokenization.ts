@@ -1,16 +1,15 @@
 import * as assert from 'assert';
-import * as sc from '../src/scanner';
+import LanguageFactory from '../src/languages/LanguageFactory';
 import Config from '../src/Config';
 
-describe('Scanner', () => {
+describe('Tokenization', () => {
 
     describe('TypeScript', () => {
 
         it('Single import', () => {
-            const scanner = sc.ScannerFactory.getScanner({ scannerExtensionsMap: { TypeScriptScanner: ["ts"] } }, "ts");
+            const language = LanguageFactory.getLanguage({ languageExtensionsMap: { TypeScript: ["ts"] } }, "ts");
 
-            const code = `import * as assert from 'assert';`;
-            const tokens = scanner.scan(code);
+            const tokens = language.tokenize([`import * as assert from 'assert';`])[0];
 
             assert.equal(tokens.length, 7);
             assert.ok(tokens[0].kind === "import export" && tokens[0].content === "import");
@@ -23,11 +22,11 @@ describe('Scanner', () => {
         });
 
         it('Escaped string delimiter', () => {
-            const scanner = sc.ScannerFactory.getScanner({ scannerExtensionsMap: { TypeScriptScanner: ["ts"] } }, "ts");
+            const language = LanguageFactory.getLanguage({ languageExtensionsMap: { TypeScript: ["ts"] } }, "ts");
 
             const testStr = (str: string, delimiter: string) => {
                 const strContent = delimiter + str + delimiter;
-                const tokens = scanner.scan(`let str = ${strContent};`);
+                const tokens = language.tokenize([`let str = ${strContent};`])[0];
 
                 assert.equal(tokens.length, 5);
                 assert.ok(tokens[3].kind === "string" && tokens[3].content === strContent);

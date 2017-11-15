@@ -1,28 +1,31 @@
-import Config from '../../Config';
-import Scanner from "./Scanner";
-import TypeScriptScanner from "../TypeScriptScanner";
-import XmlScanner from "../XmlScanner";
+import Config from "../Config";
+import Language from "./Language";
+import Token from "./Token";
 
-export default class ScannerFactory {
-    public static getScanner(config: Config, extension: string): Scanner
+import TypeScriptLanguage from "./typescript/TypeScriptLanguage";
+import XmlLanguage from "./xml/XmlLanguage";
+
+export default class LanguageFactory
+{
+    public static getLanguage(config: Config, extension: string): Language<Token>
     {
-        const scannerName = ScannerFactory.getScannerName(config, extension);
+        const name = LanguageFactory.getLanguageName(config, extension);
 
-        switch (scannerName) {
-            case "TypeScriptScanner": return new TypeScriptScanner();
-            case "XmlScanner": return new XmlScanner();
-            default: throw new Error(`Scanner '${scannerName}' doesn't exist.`);
+        switch (name) {
+            case "TypeScript": return new TypeScriptLanguage();
+            case "Xml": return new XmlLanguage();
+            default: throw new Error(`Language '${name}' doesn't exist.`);
         }
     }
 
-    private static getScannerName(config: Config, extension: string): string
+    private static getLanguageName(config: Config, extension: string): string
     {
-        for (const scanner in config.scannerExtensionsMap) {
-            if (config.scannerExtensionsMap[scanner].indexOf(extension) > -1) {
-                return scanner;
+        for (const language in config.languageExtensionsMap) {
+            if (config.languageExtensionsMap[language].indexOf(extension) > -1) {
+                return language;
             }
         }
 
-        throw new Error(`Extension '${extension}' is not mapped to any Scanner.`);
+        throw new Error(`Extension '${extension}' is not mapped to any Language.`);
     }
 }
