@@ -67,7 +67,7 @@ import Token    from '../src/Token'   ;
         });
 
 
-        it('test 2', () => {
+        it('with /regex/ literal', () => {
             const code = `
                 const codeWithoutIndentation = code.replace(/ /g, "").replace(/\\r\\n|\\r|\\n/g, "\\n").trim();
                 const indentedCodeWithoutIndentation = indentedCode.replace(/ /g, "").replace(/\\r\\n|\\r|\\n/g, "\\n").trim();
@@ -82,7 +82,7 @@ import Token    from '../src/Token'   ;
         });
 
 
-        it('test 3', () => {
+        it('a lot of big object literals', () => {
             const code = `
                 { label: 'Descrição', name: 'Nome', width: 200, align: 'left', hidden: false, editable: true, edittype: 'text' },
                 { label: 'Unidade de&nbsp;Medida', name: 'UnidadeMedida', width: 100, align: 'left', hidden: modOuMoi, editable: false, edittype: 'text' },
