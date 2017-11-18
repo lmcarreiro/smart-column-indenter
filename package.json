@@ -23,7 +23,7 @@
         "@types/lodash.intersection": "^4.4.3",
         "lodash.intersection": "^4.4.0",
         "multiple-lcs": "0.0.1-dev.20171115.2",
-        "typescript": "next"
+        "typescript": "^2.7.0-dev.20171118"
     },
     "devDependencies": {
         "@types/node": "latest",
