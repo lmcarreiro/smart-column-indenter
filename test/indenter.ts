@@ -2,16 +2,34 @@ import * as assert from 'assert';
 import Indenter from '../src/Indenter';
 import Config from '../src/Config';
 
-function test(extension: string, code: string, expected: string, config?: Config): void {
-    let indenter = new Indenter(code, extension, config);
-    let result = indenter.indent();
-
+function test(extension: string, code: string, expected: string, config?: Config): void
+{
+    const result = indent(extension, code, config);
     assert.equal(result, expected, "The indentation is different than the expected.");
+}
+
+function indent(extension: string, code: string, config?: Config): string
+{
+    return new Indenter(code, extension, config).indent();
 }
 
 describe('Indenter', () => {
 
     describe('indent()', () => {
+
+        it('one line error', () => {
+            const code = `
+            import Indenter from '../src/Indenter';
+            `;
+
+            try {
+                indent("ts", code);
+                assert.fail("The code to be indented must have at least 2 lines of code");
+            }
+            catch {
+                assert.ok(true);
+            }
+        });
 
         it('import (without indentation)', () => {
             const code = `
