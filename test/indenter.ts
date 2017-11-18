@@ -13,7 +13,28 @@ describe('Indenter', () => {
 
     describe('indent()', () => {
 
-        it('test 1', () => {
+        it('import (without indentation)', () => {
+            const code = `
+import Indenter from '../src/Indenter';
+import Token from '../src/Token';
+`;
+
+            const expected = `
+import Indenter from '../src/Indenter';
+import Token    from '../src/Token'   ;
+`;
+
+            test("ts", code, expected);
+        });
+
+        it('import (without indentation and spaces before/after)', () => {
+            const code = `import Indenter from '../src/Indenter';\r\nimport Token from '../src/Token';`;
+            const expected = `import Indenter from '../src/Indenter';\r\nimport Token    from '../src/Token'   ;`;
+
+            test("ts", code, expected);
+        });
+
+        it('import * as <identifier> vs import <identifier>', () => {
             const code = `
                 import * as assert from 'assert';
                 import Indenter from '../src/Indenter';
