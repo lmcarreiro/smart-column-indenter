@@ -36,7 +36,9 @@ export default class Indenter
     public indent(): string
     {
         const linesOfTokens = this.language.tokenize();
-        const sequences = linesOfTokens.map(line => line.map(token => this.language.token2string(token)));
+
+        const sequences = this.language.removeHeadOrTailMissingToken(linesOfTokens)
+            .map(line => line.map(token => this.language.token2string(token)));
         const lcs = new LCS().execute(sequences);
 
         const columnizedTokens = this.columnizeTokens(lcs, linesOfTokens);

@@ -3,6 +3,8 @@ import Token from "./Token";
 
 export default abstract class Language<TokenType extends Token>
 {
+    protected abstract readonly headOrTailMissingToken: string|undefined;
+
     constructor(protected linesOfCode: string[]) { }
 
     public abstract tokenize(): LineOfCode<TokenType>[];
@@ -22,20 +24,20 @@ export default abstract class Language<TokenType extends Token>
      * there is no way of this comma be part of the LCS, or if it is, it is not what we want. Then, it's best
      * to remove it before execute the LCS
      */
-    protected removeHeadOrTailMissingToken(lines: LineOfCode<TokenType>[], tokenValue: string): LineOfCode<TokenType>[]
+    public removeHeadOrTailMissingToken(lines: LineOfCode<TokenType>[]): LineOfCode<TokenType>[]
     {
-        const allButFirstStartsWithComma = lines.every((line, i) => this.xor(line[0].content === tokenValue, i === 0));
-        const allButLastEndsWithComma = lines.every((line, i) => this.xor(line[line.length-1].content === tokenValue, i === (lines.length-1)));
+        if (this.headOrTailMissingToken) {
+            const allButFirstStartsWithComma = lines.every((line, i) => this.xor(line[0].content === this.headOrTailMissingToken, i === 0));
+            const allButLastEndsWithComma = lines.every((line, i) => this.xor(line[line.length-1].content === this.headOrTailMissingToken, i === (lines.length-1)));
 
-        if (allButFirstStartsWithComma) {
-            return lines.map((line, i) => i === 0 ? line : line.slice(1));
+            if (allButFirstStartsWithComma) {
+                return lines.map((line, i) => i === 0 ? line : line.slice(1));
+            }
+            else if (allButLastEndsWithComma) {
+                return lines.map((line, i) => i === (lines.length-1) ? line : line.slice(0, -1));
+            }
         }
-        else if (allButLastEndsWithComma) {
-            return lines.map((line, i) => i === (lines.length-1) ? line : line.slice(0, -1));
-        }
-        else {
-            return lines;
-        }
+        return lines;
     }
 
     /**

@@ -7,6 +7,8 @@ import intersection = require('lodash.intersection');
 
 export default class TypeScriptLanguage extends Language<TypeScriptToken>
 {
+    protected readonly headOrTailMissingToken: string|undefined = ",";
+
     private wordsIntersection: Set<string>;
 
     public token2string(token: TypeScriptToken): string
@@ -51,7 +53,7 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken>
 
     public tokenize(): LineOfCode<TypeScriptToken>[]
     {
-        let linesOfTokens = this.linesOfCode.map(line => {
+        const linesOfTokens = this.linesOfCode.map(line => {
             const scanner = new TypeScriptScanner(line);
             const tokens = [];
 
@@ -61,8 +63,6 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken>
 
             return tokens;
         });
-
-        linesOfTokens = this.removeHeadOrTailMissingToken(linesOfTokens, ",");
 
         const wordsByLine = linesOfTokens.map(line => line.filter(t => t.syntaxKind === SyntaxKind.Identifier).map(t => t.content));
         this.wordsIntersection = new Set(intersection(...wordsByLine))
