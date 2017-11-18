@@ -1,9 +1,9 @@
 import Token from "../Token";
 
 export default class TypeScriptToken extends Token {
-    constructor(kind: TokenType, content: string)
+    constructor(kind: string, content: string, level: number)
     {
-        super(kind, content);
+        super(kind, content, level);
     }
 }
 

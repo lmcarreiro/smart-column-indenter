@@ -3,7 +3,7 @@ import Token from "../Token";
 export default class XmlToken extends Token {
     constructor(kind: TokenType, content: string)
     {
-        super(kind, content);
+        super(kind, content, 0);
     }
 }
 

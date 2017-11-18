@@ -1,6 +1,8 @@
 import Language from "../Language";
 import LineOfCode from '../LineOfCode';
+import TypeScriptScanner, { SyntaxKind } from "./TypeScriptScanner";
 import TypeScriptToken, * as token from "./TypeScriptToken";
+import * as tsc from "typescript";
 
 export default class TypeScriptLanguage extends Language<TypeScriptToken> {
 
@@ -14,6 +16,7 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken> {
 
     public token2string(token: TypeScriptToken, intersectionWords: Set<string>): string
     {
+        //TODO: doesn't work after changed the scanner to use the tsc API
         switch (token.kind) {
             case "symbol": return token.content || "";
             case "reserved word": return token.content || "";
@@ -46,63 +49,15 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken> {
     public tokenize(lines: string[]): LineOfCode<TypeScriptToken>[]
     {
         return lines.map(line => {
-            this.code = line;
-            this.position = 0;
-            this.tokens = [];
-            
-            do  {
-                this.tokens.push(this.readSymbol());
-            } while(!this.endOfCode());
+            const scanner = new TypeScriptScanner(line);
 
-            return this.tokens;
+            let tokens = [];
+
+            while(!scanner.endOfLine()) {
+                tokens.push(scanner.getToken());
+            }
+
+            return tokens;
         });
-    }
-
-    private readSymbol(): TypeScriptToken
-    {
-        while(this.code[this.position] === " ") {
-            this.position++;
-        }
-
-        let nextChar = this.code[this.position];
-
-        if (nextChar.match(/[a-zA-Z0-9_]/)) {
-            let content = [];
-            do {
-                content.push(nextChar);
-                nextChar = this.code[++this.position];
-            } while(nextChar.match(/[a-zA-Z0-9_$.]/));
-            return this.createWordToken(content.join(""));
-        }
-        else if (nextChar.match(/[\[\](){}:;,.=<>!%/*+-]/)) {
-            this.position++;
-            return new TypeScriptToken("symbol", nextChar);
-        }
-        else if (nextChar.match(/["'`\/]/)) {
-            this.position++;
-            let stringDelimiter = nextChar;
-            let content = [nextChar];
-            let prevChar = "";
-            do {
-                prevChar = nextChar;
-                nextChar = this.code[this.position++];
-                content.push(nextChar);
-            } while(nextChar !== stringDelimiter || prevChar === "\\");
-            return new TypeScriptToken("string", content.join(""));
-        }
-        else {
-            throw new Error("Invalid charater!");
-        }
-    }
-
-    private createWordToken(content: string): TypeScriptToken
-    {
-        if (token.reservedWords.indexOf(content) > -1) {
-            const type = token.reservedWordType[content] || "reserved word";
-            return new TypeScriptToken(type, content);
-        }
-        else {
-            return new TypeScriptToken("word", content);
-        }
     }
 }
