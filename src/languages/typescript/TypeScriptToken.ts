@@ -1,10 +1,55 @@
 import Token from "../Token";
+import { SyntaxKind } from "./TypeScriptScanner";
 
-export default class TypeScriptToken extends Token {
-    constructor(kind: string, content: string, level: number)
+export default class TypeScriptToken extends Token
+{
+    public syntaxKind: SyntaxKind;
+
+    constructor(kind: SyntaxKind, content: string, level: number)
     {
-        super(kind, content, level);
+        super(getSyntaxKindName(kind), content, level);
+        this.syntaxKind = kind;
     }
+}
+
+function getSyntaxKindName(kind: SyntaxKind): string
+{
+    const markers: { [name: string]: string } = {
+        FirstAssignment         : "EqualsToken",
+        LastAssignment          : "CaretEqualsToken",
+        FirstCompoundAssignment : "PlusEqualsToken",
+        LastCompoundAssignment  : "CaretEqualsToken",
+        FirstReservedWord       : "BreakKeyword",
+        LastReservedWord        : "WithKeyword",
+        FirstKeyword            : "BreakKeyword",
+        LastKeyword             : "OfKeyword",
+        FirstFutureReservedWord : "ImplementsKeyword",
+        LastFutureReservedWord  : "YieldKeyword",
+        FirstTypeNode           : "TypePredicate",
+        LastTypeNode            : "LiteralType",
+        FirstPunctuation        : "OpenBraceToken",
+        LastPunctuation         : "CaretEqualsToken",
+        FirstToken              : "Unknown",
+        LastToken               : "LastKeyword",
+        FirstTriviaToken        : "SingleLineCommentTrivia",
+        LastTriviaToken         : "ConflictMarkerTrivia",
+        FirstLiteralToken       : "NumericLiteral",
+        LastLiteralToken        : "NoSubstitutionTemplateLiteral",
+        FirstTemplateToken      : "NoSubstitutionTemplateLiteral",
+        LastTemplateToken       : "TemplateTail",
+        FirstBinaryOperator     : "LessThanToken",
+        LastBinaryOperator      : "CaretEqualsToken",
+        FirstNode               : "QualifiedName",
+        FirstJSDocNode          : "JSDocTypeExpression",
+        LastJSDocNode           : "JSDocPropertyTag",
+        FirstJSDocTagNode       : "JSDocTag",
+        LastJSDocTagNode        : "JSDocPropertyTag",
+        FirstContextualKeyword  : "AbstractKeyword",
+        LastContextualKeyword   : "OfKeyword",
+    };
+
+    const name = SyntaxKind[kind];
+    return markers.hasOwnProperty(name) ? markers[name] : name;
 }
 
 type TokenType = "word"

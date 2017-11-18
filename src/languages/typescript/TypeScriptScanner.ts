@@ -14,7 +14,7 @@ let nestableKinds: [SyntaxKind, SyntaxKind][] = [
     [SyntaxKind.TemplateHead,     SyntaxKind.TemplateTail     ],
 ];
 
-export { SyntaxKind };
+export { SyntaxKind, nestableKinds };
 
 export default class TypeScriptScanner
 {
@@ -59,51 +59,11 @@ export default class TypeScriptScanner
             }
         }
         
-        return new TypeScriptToken(this.getSyntaxKindName(token), this.tscScanner.getTokenText(), level);
+        return new TypeScriptToken(token, this.tscScanner.getTokenText(), level);
     }
 
     public endOfLine(): boolean
     {
         return this.tscScanner.getTextPos() === this.lineOfcode.length;
-    }
-
-    private getSyntaxKindName(kind: SyntaxKind): string
-    {
-        const markers: { [name: string]: string } = {
-            FirstAssignment         : "EqualsToken",
-            LastAssignment          : "CaretEqualsToken",
-            FirstCompoundAssignment : "PlusEqualsToken",
-            LastCompoundAssignment  : "CaretEqualsToken",
-            FirstReservedWord       : "BreakKeyword",
-            LastReservedWord        : "WithKeyword",
-            FirstKeyword            : "BreakKeyword",
-            LastKeyword             : "OfKeyword",
-            FirstFutureReservedWord : "ImplementsKeyword",
-            LastFutureReservedWord  : "YieldKeyword",
-            FirstTypeNode           : "TypePredicate",
-            LastTypeNode            : "LiteralType",
-            FirstPunctuation        : "OpenBraceToken",
-            LastPunctuation         : "CaretEqualsToken",
-            FirstToken              : "Unknown",
-            LastToken               : "LastKeyword",
-            FirstTriviaToken        : "SingleLineCommentTrivia",
-            LastTriviaToken         : "ConflictMarkerTrivia",
-            FirstLiteralToken       : "NumericLiteral",
-            LastLiteralToken        : "NoSubstitutionTemplateLiteral",
-            FirstTemplateToken      : "NoSubstitutionTemplateLiteral",
-            LastTemplateToken       : "TemplateTail",
-            FirstBinaryOperator     : "LessThanToken",
-            LastBinaryOperator      : "CaretEqualsToken",
-            FirstNode               : "QualifiedName",
-            FirstJSDocNode          : "JSDocTypeExpression",
-            LastJSDocNode           : "JSDocPropertyTag",
-            FirstJSDocTagNode       : "JSDocTag",
-            LastJSDocTagNode        : "JSDocPropertyTag",
-            FirstContextualKeyword  : "AbstractKeyword",
-            LastContextualKeyword   : "OfKeyword",
-        };
-
-        const name = SyntaxKind[kind];
-        return markers.hasOwnProperty(name) ? markers[name] : name;
     }
 }

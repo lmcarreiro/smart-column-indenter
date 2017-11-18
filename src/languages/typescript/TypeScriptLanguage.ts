@@ -1,31 +1,34 @@
 import Language from "../Language";
 import LineOfCode from '../LineOfCode';
-import TypeScriptScanner, { SyntaxKind } from "./TypeScriptScanner";
+import TypeScriptScanner, { SyntaxKind, nestableKinds } from "./TypeScriptScanner";
 import TypeScriptToken, * as token from "./TypeScriptToken";
 import * as tsc from "typescript";
+import intersection = require('lodash.intersection');
 
-export default class TypeScriptLanguage extends Language<TypeScriptToken> {
+export default class TypeScriptLanguage extends Language<TypeScriptToken>
+{
+    private wordsIntersection: Set<string>;
 
-    private code: string;
-    private position: number;
-    private tokens: TypeScriptToken[];
-
-    private endOfCode(): boolean {
-        return this.position >= this.code.length;
-    }
-
-    public token2string(token: TypeScriptToken, intersectionWords: Set<string>): string
+    public token2string(token: TypeScriptToken): string
     {
-        //TODO: doesn't work after changed the scanner to use the tsc API
-        switch (token.kind) {
-            case "symbol": return token.content || "";
-            case "reserved word": return token.content || "";
-            case "word": return intersectionWords.has(token.content || "") ? `${token.kind}[${token.content}]` : token.kind;
-            default: return token.kind;
+        if (nestableKinds.some(t => t[0] === token.syntaxKind || t[1] === token.syntaxKind)) {
+            return `${token.content}[${token.level}]`;
+        }
+        else if (SyntaxKind.FirstPunctuation <= token.syntaxKind && token.syntaxKind <= SyntaxKind.LastPunctuation) {
+            return token.content;
+        }
+        else if (SyntaxKind.FirstLiteralToken <= token.syntaxKind && token.syntaxKind <= SyntaxKind.LastLiteralToken) {
+            return token.kind;
+        }
+        else if (token.syntaxKind === SyntaxKind.Identifier) {
+            return this.wordsIntersection.has(token.content || "") ? `${token.kind}[${token.content}]` : token.kind;
+        }
+        else {
+            return token.content;
         }
     }
 
-    public stringify(lines: (TypeScriptToken|undefined)[][], indentation: string, lineBreak: string): string
+    public stringify(lines: (TypeScriptToken|undefined)[][]): string[]
     {
         const stringifiedLines = lines.map(line => "");
 
@@ -43,15 +46,14 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken> {
             }
         }
 
-        return stringifiedLines.map(line => indentation + line).join(lineBreak);
+        return stringifiedLines;
     }
 
-    public tokenize(lines: string[]): LineOfCode<TypeScriptToken>[]
+    public tokenize(): LineOfCode<TypeScriptToken>[]
     {
-        return lines.map(line => {
+        let linesOfTokens = this.linesOfCode.map(line => {
             const scanner = new TypeScriptScanner(line);
-
-            let tokens = [];
+            const tokens = [];
 
             while(!scanner.endOfLine()) {
                 tokens.push(scanner.getToken());
@@ -59,5 +61,12 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken> {
 
             return tokens;
         });
+
+        linesOfTokens = this.removeHeadOrTailMissingToken(linesOfTokens, ",");
+
+        const wordsByLine = linesOfTokens.map(line => line.filter(t => t.syntaxKind === SyntaxKind.Identifier).map(t => t.content));
+        this.wordsIntersection = new Set(intersection(...wordsByLine))
+
+        return linesOfTokens;
     }
 }

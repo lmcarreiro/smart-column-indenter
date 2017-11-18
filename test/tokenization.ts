@@ -7,9 +7,11 @@ describe('Tokenization', () => {
     describe('TypeScript', () => {
 
         it('Single import', () => {
-            const language = LanguageFactory.getLanguage({ languageExtensionsMap: { TypeScript: ["ts"] } }, "ts");
+            const config = { languageExtensionsMap: { TypeScript: ["ts"] } };
+            const code = [`import * as assert from 'assert';`];
+            const language = LanguageFactory.getLanguage(config, "ts", code);
 
-            const tokens = language.tokenize([`import * as assert from 'assert';`])[0];
+            const tokens = language.tokenize()[0];
 
             assert.equal(tokens.length, 7);
             assert.ok(tokens[0].kind === "import export" && tokens[0].content === "import");
@@ -22,11 +24,13 @@ describe('Tokenization', () => {
         });
 
         it('Escaped string delimiter', () => {
-            const language = LanguageFactory.getLanguage({ languageExtensionsMap: { TypeScript: ["ts"] } }, "ts");
 
             const testStr = (str: string, delimiter: string) => {
+                const config = { languageExtensionsMap: { TypeScript: ["ts"] } };
                 const strContent = delimiter + str + delimiter;
-                const tokens = language.tokenize([`let str = ${strContent};`])[0];
+                const code = [`let str = ${strContent};`];
+                const language = LanguageFactory.getLanguage(config, "ts", code);
+                const tokens = language.tokenize()[0];
 
                 assert.equal(tokens.length, 5);
                 assert.ok(tokens[3].kind === "string" && tokens[3].content === strContent);
