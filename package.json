@@ -1,5 +1,5 @@
 {
-    "version": "0.0.1-dev.20171112.7",
+    "version": "0.0.1-dev.20171118",
     "name": "smart-column-indenter",
     "description": "A smart source code indenter that indent the code into columns",
     "keywords": [
@@ -23,7 +23,7 @@
         "@types/lodash.intersection": "^4.4.3",
         "lodash.intersection": "^4.4.0",
         "multiple-lcs": "0.0.1-dev.20171115.2",
-        "typescript": "^2.7.0-dev.20171118"
+        "typescript": "2.7.0-dev.20171118"
     },
     "devDependencies": {
         "@types/node": "latest",
