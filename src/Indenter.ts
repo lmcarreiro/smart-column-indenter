@@ -9,8 +9,6 @@ import Config  from './Config';
 export default class Indenter
 {
     private code: string;
-    private indentation: string;
-    private lineBreak: string;
     private language: Language<Token>;
 
     public constructor(code: string, extension: string, config?: Config) {
@@ -20,8 +18,6 @@ export default class Indenter
         assert.ok(linesOfCode.length >= 2, "The code to indent must have at least 2 lines of code.");
 
         this.code = code;
-        this.lineBreak = (code.match(/\r\n|\r|\n/) || ["\n"])[0];
-        this.indentation = code.trim().split(/\r\n|\r|\n/g)[1].replace(/(\s+).*/, "$1");
         this.language = LanguageFactory.getLanguage(completeConfig, extension, linesOfCode);
     }
 
@@ -42,9 +38,14 @@ export default class Indenter
         const lcs = new LCS().execute(sequences);
 
         const columnizedTokens = this.columnizeTokens(lcs, linesOfTokens);
-        const indentedCode = this.language.stringify(columnizedTokens)
-            .map(line => this.indentation + line)
-            .join(this.lineBreak);
+
+        const spacesBefore = this.code.replace(/\S[\s\S]*/, "");
+        const spacesAfter = this.code.replace(/[\s\S]*\S/, "");
+        const lineBreak = (this.code.match(/\r\n|\r|\n/) || ["\n"])[0];
+        const indentation = this.code.trim().split(/\r\n|\r|\n/g)[1].replace(/(\s+).*/, "$1");
+
+        let indentedCode = this.language.stringify(columnizedTokens).join(lineBreak + indentation);
+        indentedCode = spacesBefore + indentedCode + spacesAfter;
 
         this.ensureSameCode(this.code, indentedCode);
 
