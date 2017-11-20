@@ -36,6 +36,7 @@ export default class Columnizer
             this.copyUntil(commonToken);
             this.addColumn();
             this.copyOnce();
+            this.addColumn();
         }
 
         this.copyUntil();

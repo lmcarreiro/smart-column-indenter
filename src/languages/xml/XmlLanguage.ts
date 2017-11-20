@@ -20,4 +20,9 @@ export default class XmlLanguage extends Language<XmlToken> {
     {
         throw new Error("Method not implemented.");
     }
+
+    public preProcessInput(lines: LineOfCode<XmlToken>[]): LineOfCode<XmlToken>[]
+    {
+        throw new Error("Method not implemented.");
+    }
 }

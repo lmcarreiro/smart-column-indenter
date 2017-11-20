@@ -6,7 +6,7 @@ import Token from './languages/Token';
 import LCS from 'multiple-lcs';
 import Config  from './Config';
 import Columnizer from './Columnizer';
-
+import intersection = require('lodash.intersection');
 
 export default class Indenter
 {
@@ -28,7 +28,7 @@ export default class Indenter
         return <Config>{ ...defaultConfig, ...newConfig };
     }
 
-    public indent(): string
+    public indent(type: "2"|"N"): string
     {
         const language = LanguageFactory.getLanguage(this.config, this.extension);
         const linesOfCode = this.code.split(/\r\n|\r|\n/).map(l => l.trim()).filter(l => l !== "");
@@ -36,7 +36,7 @@ export default class Indenter
         assert.ok(linesOfCode.length >= 2, "The code to indent must have at least 2 lines of code.");
 
         const linesOfTokens = language.tokenize(linesOfCode);
-        const commonTokens = this.commonTokens(language, linesOfTokens);
+        const commonTokens = this.commonTokens(language, linesOfTokens, type);
         const columnizedTokens = new Columnizer(language, commonTokens, linesOfTokens).columnize();
         const indentedCode = this.stringify(language, columnizedTokens);
 
@@ -45,11 +45,25 @@ export default class Indenter
         return indentedCode;
     }
 
-    private commonTokens(language: Language<Token>, linesOfTokens: Token[][]): string[]
+    private commonTokens(language: Language<Token>, linesOfTokens: Token[][], type: "2"|"N"): string[]
     {
-        const sequencesOfTokens = language.removeHeadOrTailMissingToken(linesOfTokens);
+        const sequencesOfTokens = language.preProcessInput(linesOfTokens);
         const sequencesOfStrings = sequencesOfTokens.map(line => line.map(token => language.token2string(token)));
-        return new LCS().execute(sequencesOfStrings);
+
+        if (type === "N") {
+            return new LCS().execute(sequencesOfStrings);
+        }
+        else if (type === "2") {
+            let firstCommonToken: string[];
+            let i = 0;
+            do {
+                firstCommonToken = intersection(...sequencesOfStrings.map(line => line.slice(0, ++i)));
+            } while(!firstCommonToken.length);
+            return [firstCommonToken[0]];
+        }
+        else {
+            throw new Error("Unknown indentation type.");
+        }
     }
 
     private stringify(language: Language<Token>, columnizedTokens: (Token[])[][]): string

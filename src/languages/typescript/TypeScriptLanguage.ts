@@ -69,4 +69,12 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken>
 
         return linesOfTokens;
     }
+
+    public preProcessInput(lines: LineOfCode<TypeScriptToken>[]): LineOfCode<TypeScriptToken>[]
+    {
+        let processedLines = lines;
+        processedLines = this.removeHeadOrTailMissingToken(processedLines, ",");
+        processedLines = processedLines.map(line => line.filter(t => t.syntaxKind !== SyntaxKind.WhitespaceTrivia));
+        return processedLines;
+    }
 }
