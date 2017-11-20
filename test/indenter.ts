@@ -81,6 +81,21 @@ import Token    from '../src/Token'   ;
             test("N", "ts", code, expected);
         });
 
+        it('import <identifier> from "path" vs import <identifier> = require("path")', () => {
+            const code = `
+                import Config  from './Config';
+                import Columnizer from './Columnizer';
+                import intersection = require('lodash.intersection');
+            `;
+
+            const expected = `
+                import Config       from      './Config'            ;
+                import Columnizer   from      './Columnizer'        ;
+                import intersection = require('lodash.intersection');
+            `;
+
+            test("N", "ts", code, expected);
+        });
 
         it('a lot of big object literals', () => {
             const code = `

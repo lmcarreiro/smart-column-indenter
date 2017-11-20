@@ -36,8 +36,13 @@ export default class Indenter
         assert.ok(linesOfCode.length >= 2, "The code to indent must have at least 2 lines of code.");
 
         const linesOfTokens = language.tokenize(linesOfCode);
-        const commonTokens = this.commonTokens(language, linesOfTokens, type);
-        const columnizedTokens = new Columnizer(language, commonTokens, linesOfTokens).columnize();
+
+        const inputTokens = language.preProcessInput(linesOfTokens);
+        const commonTokens = this.commonTokens(language, inputTokens, type);
+
+        const outputTokens = language.preProcessOutput(linesOfTokens);
+        const columnizedTokens = new Columnizer(language, commonTokens, outputTokens).columnize();
+
         const indentedCode = this.stringify(language, columnizedTokens);
 
         this.ensureSameCode(this.code, indentedCode);
@@ -47,8 +52,7 @@ export default class Indenter
 
     private commonTokens(language: Language<Token>, linesOfTokens: Token[][], type: "2"|"N"): string[]
     {
-        const sequencesOfTokens = language.preProcessInput(linesOfTokens);
-        const sequencesOfStrings = sequencesOfTokens.map(line => line.map(token => language.token2string(token)));
+        const sequencesOfStrings = linesOfTokens.map(line => line.map(token => language.token2string(token)));
 
         if (type === "N") {
             return new LCS().execute(sequencesOfStrings);

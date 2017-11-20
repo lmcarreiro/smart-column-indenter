@@ -10,6 +10,8 @@ export default abstract class Language<TokenType extends Token>
     public abstract token2string(token: TokenType): string;
 
     public abstract preProcessInput(lines: LineOfCode<TokenType>[]): LineOfCode<TokenType>[];
+    
+    public abstract preProcessOutput(lines: LineOfCode<TokenType>[]): LineOfCode<TokenType>[];
 
     protected pad(str: string, length: number, char: string = " "): string
     {

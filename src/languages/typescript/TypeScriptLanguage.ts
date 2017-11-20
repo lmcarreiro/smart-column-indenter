@@ -77,4 +77,19 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken>
         processedLines = processedLines.map(line => line.filter(t => t.syntaxKind !== SyntaxKind.WhitespaceTrivia));
         return processedLines;
     }
+
+    public preProcessOutput(lines: LineOfCode<TypeScriptToken>[]): LineOfCode<TypeScriptToken>[]
+    {
+        return lines.map(line => line.map(t => this.transformOutputToken(t)))
+    }
+
+    private transformOutputToken(token: TypeScriptToken): TypeScriptToken
+    {
+        //This is needed because some places already have multiples whitespaces
+        if (token.syntaxKind === SyntaxKind.WhitespaceTrivia && token.content.match(/\s\s+/)) {
+            return new TypeScriptToken(token.syntaxKind, " ", token.level);
+        }
+
+        return token;
+    }
 }
