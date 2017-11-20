@@ -73,7 +73,11 @@ export default class Indenter
         const lineBreak = (this.code.match(/\r\n|\r|\n/) || ["\n"])[0];
         const indentation = this.code.trim().split(/\r\n|\r|\n/g)[1].replace(/^(\s*).*/, "$1");
 
-        const indentedCode = language.stringify(columnizedTokens).join(lineBreak + indentation);
+        const indentedCode = language
+            .stringify(columnizedTokens)
+            .map(line => line.replace(/\s+$/, ""))
+            .join(lineBreak + indentation);
+
         return spacesBefore + indentedCode + spacesAfter;
 
     }
