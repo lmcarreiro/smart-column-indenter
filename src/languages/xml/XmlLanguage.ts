@@ -6,7 +6,7 @@ export default class XmlLanguage extends Language<XmlToken> {
 
     protected readonly headOrTailMissingToken: string|undefined = undefined;
 
-    public stringify(columnizedLines: (XmlToken|undefined)[][]): string[]
+    public stringify(columnizedLines: (XmlToken[])[][]): string[]
     {
         throw new Error("Method not implemented.");
     }

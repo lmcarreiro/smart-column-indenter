@@ -30,20 +30,20 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken>
         }
     }
 
-    public stringify(lines: (TypeScriptToken|undefined)[][]): string[]
+    public stringify(lines: (TypeScriptToken[])[][]): string[]
     {
         const stringifiedLines = lines.map(line => "");
 
         for (let column = 0; column < lines[0].length; column++) {
             const lengths = lines.map(l => {
-                const token = l[column];
-                return (token && token.content || "").length;
+                const tokens = l[column];
+                return tokens.map(t => t.content.length).reduce((a, b) => a + b, 0);
             });
             const maxLength = Math.max(...lengths);
 
             for (let i = 0; i < lines.length; i++) {
-                const token = lines[i][column];
-                const content = token && token.content || "";
+                const tokens = lines[i][column];
+                const content = tokens.map(t => t.content).join("");
                 stringifiedLines[i] += this.pad(content, maxLength);
             }
         }

@@ -9,7 +9,7 @@ export default abstract class Language<TokenType extends Token>
 
     public abstract tokenize(): LineOfCode<TokenType>[];
 
-    public abstract stringify(columnizedLines: (Token|undefined)[][]): string[];
+    public abstract stringify(columnizedLines: (Token[])[][]): string[];
 
     public abstract token2string(token: TokenType): string;
 

@@ -62,37 +62,46 @@ export default class Indenter
         }
     }
 
-    private columnizeTokens(lcs: string[], lines: Token[][]): (Token|undefined)[][]
+    /**
+     * Split each line into of the input in columns. This method returns a 3D matrix as an array of lines. Each line is an array os columns.
+     * Each line/column position has an array os tokens.
+     */
+    private columnizeTokens(lcs: string[], lines: Token[][]): (Token[])[][]
     {
-        const columnizedLines = lines.map(line => [] as (Token|undefined)[]);
-        const actualColumnByLine = lines.map(line => 0);
+        const columnizedLines = lines.map(line => [] as Token[][]);
+        const actualTokenByLine = lines.map(line => 0);
 
         for (const lcsToken of lcs) {
             let tokenWithOtherKind: boolean;
 
-            do {
-                tokenWithOtherKind = false;
+            while (lines.some((line, i) => this.language.token2string(line[actualTokenByLine[i]]) !== lcsToken))
+            {
                 lines.forEach((line, i) => {
-                    if (this.language.token2string(line[actualColumnByLine[i]]) !== lcsToken) {
-                        tokenWithOtherKind = true;
-                        columnizedLines[i].push(line[actualColumnByLine[i]]);
-                        actualColumnByLine[i]++;
-                    }
-                    else {
-                        columnizedLines[i].push(undefined);
+                    const column = columnizedLines[i].length;
+                    columnizedLines[i][column] = columnizedLines[i][column] || [];
+                    while (line[actualTokenByLine[i]] && this.language.token2string(line[actualTokenByLine[i]]) !== lcsToken) {
+                        columnizedLines[i][column].push(line[actualTokenByLine[i]++]);
                     }
                 });
-            } while(tokenWithOtherKind);
+            }
 
             lines.forEach((line, i) => {
-                columnizedLines[i].push(line[actualColumnByLine[i]]);
-                actualColumnByLine[i]++;
+                const column = columnizedLines[i].length;
+                columnizedLines[i][column] = columnizedLines[i][column] || [];
+                if (line[actualTokenByLine[i]]) {
+                    columnizedLines[i][column].push(line[actualTokenByLine[i]++]);
+                }
             });
         }
 
-        while (lines.some((line, i) => actualColumnByLine[i] < line.length)) {
+        if (lines.some((line, i) => actualTokenByLine[i] < line.length)) {
             lines.forEach((line, i) => {
-                columnizedLines[i].push(actualColumnByLine[i] < line.length ? line[actualColumnByLine[i]++] : undefined);
+                const column = columnizedLines[i].length;
+                columnizedLines[i][column] = columnizedLines[i][column] || [];
+
+                while (actualTokenByLine[i] < line.length) {
+                    columnizedLines[i][column].push(line[actualTokenByLine[i]++]);
+                }
             });
         }
 
