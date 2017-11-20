@@ -1,5 +1,5 @@
 {
-    "version": "0.0.1-dev.20171118.2",
+    "version": "0.0.1-dev.20171120",
     "name": "smart-column-indenter",
     "description": "A smart source code indenter that indent the code into columns",
     "keywords": [
@@ -33,7 +33,7 @@
         "mocha": "latest"
     },
     "scripts": {
-        "prepack": "npm run build",
+        "prepack": "npm run test",
         "start": "npm run build && node test/main.js",
         "test": "npm run build && mocha",
         "build": "tsc -p tsconfig.json"
