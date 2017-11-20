@@ -5,20 +5,19 @@ import Language from './languages/Language';
 import Token from './languages/Token';
 import LCS from 'multiple-lcs';
 import Config  from './Config';
+import Columnizer from './Columnizer';
+
 
 export default class Indenter
 {
     private code: string;
-    private language: Language<Token>;
+    private extension: string;
+    private config: Config;
 
     public constructor(code: string, extension: string, config?: Config) {
-        const completeConfig = this.overrideDefaultConfig(config);
-        
-        const linesOfCode = code.split(/\r\n|\r|\n/).map(l => l.trim()).filter(l => l !== "");
-        assert.ok(linesOfCode.length >= 2, "The code to indent must have at least 2 lines of code.");
-
         this.code = code;
-        this.language = LanguageFactory.getLanguage(completeConfig, extension, linesOfCode);
+        this.extension = extension;
+        this.config = this.overrideDefaultConfig(config);
     }
 
     private overrideDefaultConfig(newConfig?: Config): Config
@@ -31,25 +30,38 @@ export default class Indenter
 
     public indent(): string
     {
-        const linesOfTokens = this.language.tokenize();
+        const language = LanguageFactory.getLanguage(this.config, this.extension);
+        const linesOfCode = this.code.split(/\r\n|\r|\n/).map(l => l.trim()).filter(l => l !== "");
+        
+        assert.ok(linesOfCode.length >= 2, "The code to indent must have at least 2 lines of code.");
 
-        const sequences = this.language.removeHeadOrTailMissingToken(linesOfTokens)
-            .map(line => line.map(token => this.language.token2string(token)));
-        const lcs = new LCS().execute(sequences);
+        const linesOfTokens = language.tokenize(linesOfCode);
+        const commonTokens = this.commonTokens(language, linesOfTokens);
+        const columnizedTokens = new Columnizer(language, commonTokens, linesOfTokens).columnize();
+        const indentedCode = this.stringify(language, columnizedTokens);
 
-        const columnizedTokens = this.columnizeTokens(lcs, linesOfTokens);
+        this.ensureSameCode(this.code, indentedCode);
 
+        return indentedCode;
+    }
+
+    private commonTokens(language: Language<Token>, linesOfTokens: Token[][]): string[]
+    {
+        const sequencesOfTokens = language.removeHeadOrTailMissingToken(linesOfTokens);
+        const sequencesOfStrings = sequencesOfTokens.map(line => line.map(token => language.token2string(token)));
+        return new LCS().execute(sequencesOfStrings);
+    }
+
+    private stringify(language: Language<Token>, columnizedTokens: (Token[])[][]): string
+    {
         const spacesBefore = this.code.replace(/\S[\s\S]*/, "");
         const spacesAfter = this.code.replace(/[\s\S]*\S/, "");
         const lineBreak = (this.code.match(/\r\n|\r|\n/) || ["\n"])[0];
         const indentation = this.code.trim().split(/\r\n|\r|\n/g)[1].replace(/^(\s*).*/, "$1");
 
-        let indentedCode = this.language.stringify(columnizedTokens).join(lineBreak + indentation);
-        indentedCode = spacesBefore + indentedCode + spacesAfter;
+        const indentedCode = language.stringify(columnizedTokens).join(lineBreak + indentation);
+        return spacesBefore + indentedCode + spacesAfter;
 
-        this.ensureSameCode(this.code, indentedCode);
-
-        return indentedCode;
     }
 
     private ensureSameCode(code: string, indentedCode: string): void
@@ -60,51 +72,5 @@ export default class Indenter
         if (codeWithoutIndentation !== indentedCodeWithoutIndentation) {
             throw new Error("The indentation process are trying to change the code. It is a bug, please, open an issue: https://github.com/lmcarreiro/smart-column-indenter");
         }
-    }
-
-    /**
-     * Split each line into of the input in columns. This method returns a 3D matrix as an array of lines. Each line is an array os columns.
-     * Each line/column position has an array os tokens.
-     */
-    private columnizeTokens(lcs: string[], lines: Token[][]): (Token[])[][]
-    {
-        const columnizedLines = lines.map(line => [] as Token[][]);
-        const actualTokenByLine = lines.map(line => 0);
-
-        for (const lcsToken of lcs) {
-            let tokenWithOtherKind: boolean;
-
-            while (lines.some((line, i) => this.language.token2string(line[actualTokenByLine[i]]) !== lcsToken))
-            {
-                lines.forEach((line, i) => {
-                    const column = columnizedLines[i].length;
-                    columnizedLines[i][column] = columnizedLines[i][column] || [];
-                    while (line[actualTokenByLine[i]] && this.language.token2string(line[actualTokenByLine[i]]) !== lcsToken) {
-                        columnizedLines[i][column].push(line[actualTokenByLine[i]++]);
-                    }
-                });
-            }
-
-            lines.forEach((line, i) => {
-                const column = columnizedLines[i].length;
-                columnizedLines[i][column] = columnizedLines[i][column] || [];
-                if (line[actualTokenByLine[i]]) {
-                    columnizedLines[i][column].push(line[actualTokenByLine[i]++]);
-                }
-            });
-        }
-
-        if (lines.some((line, i) => actualTokenByLine[i] < line.length)) {
-            lines.forEach((line, i) => {
-                const column = columnizedLines[i].length;
-                columnizedLines[i][column] = columnizedLines[i][column] || [];
-
-                while (actualTokenByLine[i] < line.length) {
-                    columnizedLines[i][column].push(line[actualTokenByLine[i]++]);
-                }
-            });
-        }
-
-        return columnizedLines;
     }
 }

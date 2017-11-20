@@ -9,9 +9,9 @@ describe('Tokenization', () => {
         it('Single import', () => {
             const config = { languageExtensionsMap: { TypeScript: ["ts"] } };
             const code = [`import * as assert from 'assert';`];
-            const language = LanguageFactory.getLanguage(config, "ts", code);
+            const language = LanguageFactory.getLanguage(config, "ts");
 
-            const tokens = language.tokenize()[0];
+            const tokens = language.tokenize(code)[0];
 
             assert.equal(tokens.length, 7);
             assert.ok(tokens[0].kind === "import export" && tokens[0].content === "import");
@@ -29,8 +29,8 @@ describe('Tokenization', () => {
                 const config = { languageExtensionsMap: { TypeScript: ["ts"] } };
                 const strContent = delimiter + str + delimiter;
                 const code = [`let str = ${strContent};`];
-                const language = LanguageFactory.getLanguage(config, "ts", code);
-                const tokens = language.tokenize()[0];
+                const language = LanguageFactory.getLanguage(config, "ts");
+                const tokens = language.tokenize(code)[0];
 
                 assert.equal(tokens.length, 5);
                 assert.ok(tokens[3].kind === "string" && tokens[3].content === strContent);

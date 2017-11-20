@@ -16,7 +16,7 @@ export default class XmlLanguage extends Language<XmlToken> {
         throw new Error("Method not implemented.");
     }
 
-    public tokenize(): LineOfCode<XmlToken>[]
+    public tokenize(linesOfCode: string[]): LineOfCode<XmlToken>[]
     {
         throw new Error("Method not implemented.");
     }

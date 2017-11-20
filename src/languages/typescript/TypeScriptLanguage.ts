@@ -51,9 +51,9 @@ export default class TypeScriptLanguage extends Language<TypeScriptToken>
         return stringifiedLines;
     }
 
-    public tokenize(): LineOfCode<TypeScriptToken>[]
+    public tokenize(linesOfCode: string[]): LineOfCode<TypeScriptToken>[]
     {
-        const linesOfTokens = this.linesOfCode.map(line => {
+        const linesOfTokens = linesOfCode.map(line => {
             const scanner = new TypeScriptScanner(line);
             const tokens = [];
 

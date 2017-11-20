@@ -7,13 +7,13 @@ import XmlLanguage from "./xml/XmlLanguage";
 
 export default class LanguageFactory
 {
-    public static getLanguage(config: Config, extension: string, linesOfCode: string[]): Language<Token>
+    public static getLanguage(config: Config, extension: string): Language<Token>
     {
         const name = LanguageFactory.getLanguageName(config, extension);
 
         switch (name) {
-            case "TypeScript": return new TypeScriptLanguage(linesOfCode);
-            case "Xml": return new XmlLanguage(linesOfCode);
+            case "TypeScript": return new TypeScriptLanguage();
+            case "Xml": return new XmlLanguage();
             default: throw new Error(`Language '${name}' doesn't exist.`);
         }
     }

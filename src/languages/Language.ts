@@ -5,9 +5,7 @@ export default abstract class Language<TokenType extends Token>
 {
     protected abstract readonly headOrTailMissingToken: string|undefined;
 
-    constructor(protected linesOfCode: string[]) { }
-
-    public abstract tokenize(): LineOfCode<TokenType>[];
+    public abstract tokenize(linesOfCode: string[]): LineOfCode<TokenType>[];
 
     public abstract stringify(columnizedLines: (Token[])[][]): string[];
 
