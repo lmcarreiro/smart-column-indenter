@@ -97,6 +97,31 @@ import Token    from '../src/Token'   ;
             test("N", "ts", code, expected);
         });
 
+        it('some small object literals with trailing spaces', () => {
+            const code = `
+                {name:'id',index:'id', width:55},
+                {name:'invdate',index:'invdate', width:90},
+                {name:'name',index:'name asc, invdate', width:100},
+                {name:'amount',index:'amount', width:80, align:"right"},  
+                {name:'tax',index:'tax', width:80, align:"right"},		
+                {name:'total',index:'total', width:80, align:"right"},		
+                {name:'note',index:'note', width:150, sortable:false}
+            `;
+
+            const expected = `
+                {name:'id'     ,index:'id'               , width:55                 },
+                {name:'invdate',index:'invdate'          , width:90                 },
+                {name:'name'   ,index:'name asc, invdate', width:100                },
+                {name:'amount' ,index:'amount'           , width:80 , align:"right" },
+                {name:'tax'    ,index:'tax'              , width:80 , align:"right" },
+                {name:'total'  ,index:'total'            , width:80 , align:"right" },
+                {name:'note'   ,index:'note'             , width:150, sortable:false}
+            `;
+
+            debugger;
+            test("N", "ts", code, expected);
+        });
+
         it('a lot of big object literals', () => {
             const code = `
                 { label: 'Descrição', name: 'Nome', width: 200, align: 'left', hidden: false, editable: true, edittype: 'text' },
