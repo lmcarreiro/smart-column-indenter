@@ -118,7 +118,6 @@ import Token    from '../src/Token'   ;
                 {name:'note'   ,index:'note'             , width:150, sortable:false}
             `;
 
-            debugger;
             test("N", "ts", code, expected);
         });
 
