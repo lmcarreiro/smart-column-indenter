@@ -26,6 +26,9 @@ export default class LanguageFactory
             }
         }
 
-        throw new Error(`Extension '${extension}' is not mapped to any Language.`);
+        //TODO: while we don't have other languages yet, lets try to scan it using TypeScript scanner for now
+        return "TypeScript";
+
+        //throw new Error(`Extension '${extension}' is not mapped to any Language.`);
     }
 }
